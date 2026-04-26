@@ -1,0 +1,53 @@
+.overlay {
+  width: 360px;
+  min-height: 100vh;
+  background: rgba(20, 20, 30, 0.92);
+  color: #e8e8f0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: move;
+  -webkit-app-region: drag;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hideBtn {
+  -webkit-app-region: no-drag;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}

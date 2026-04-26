@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-linux:
+    name: Package Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install all dependencies
+        run: |
+          npm ci --prefix ui
+          npm ci --prefix electron
+
+      - name: Build UI
+        run: npm run build --prefix ui
+
+      - name: Build Electron
+        run: npm run build --prefix electron
+
+      - name: Package Linux
+        run: npm run package:linux --prefix electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: floating-agent-linux
+          path: electron/out/*.AppImage
+
+  release-github:
+    name: Create GitHub Release
+    needs: [release-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        id: git_cliff
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: floating-agent-linux
+          path: artifacts/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.git_cliff.outputs.content }}
+          files: artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
