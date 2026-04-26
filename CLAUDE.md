@@ -6,6 +6,10 @@
 that provides quick access to AI, system monitoring, Notion project status, calendar,
 messaging, and productivity tools without leaving your current context.
 
+## Language Rules
+
+- Language: English — all code, comments, documentation, instructions, and configuration files must be in English.
+
 ## Architecture
 
 **Option A (preferred)**: Electron shell + React UI (renderer) + Python daemon (sidecar)
@@ -54,15 +58,15 @@ floating-agent/
 
 ## Key Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Shell | Electron (contextIsolation + nodeIntegration=false) | Cross-platform, rich ecosystem |
-| UI | React 19 + Vite + TypeScript | Familiar stack, fast HMR |
-| Daemon | Python FastAPI (async) | Reuse chrysa Python stack, psutil, keyring |
-| AI routing | chrysa/ai-aggregator HTTP API | Centralized provider management |
-| Secrets | OS keychain via `keyring` lib | No plaintext secrets |
-| Overlay | `alwaysOnTop: true`, frameless, transparent bg | Non-intrusive floating behavior |
-| IPC | contextBridge → preload → renderer | Security best practice |
+| Decision   | Choice                                              | Rationale                                  |
+| ---------- | --------------------------------------------------- | ------------------------------------------ |
+| Shell      | Electron (contextIsolation + nodeIntegration=false) | Cross-platform, rich ecosystem             |
+| UI         | React 19 + Vite + TypeScript                        | Familiar stack, fast HMR                   |
+| Daemon     | Python FastAPI (async)                              | Reuse chrysa Python stack, psutil, keyring |
+| AI routing | chrysa/ai-aggregator HTTP API                       | Centralized provider management            |
+| Secrets    | OS keychain via `keyring` lib                       | No plaintext secrets                       |
+| Overlay    | `alwaysOnTop: true`, frameless, transparent bg      | Non-intrusive floating behavior            |
+| IPC        | contextBridge → preload → renderer                  | Security best practice                     |
 
 ## Security Rules
 
@@ -75,6 +79,7 @@ floating-agent/
 ## Plugins System (daemon)
 
 Each integration lives in `daemon/floating_agent/plugins/`:
+
 - `system.py` — psutil: CPU, RAM, disk, process list
 - `notion.py` — Notion MCP or REST API client
 - `calendar.py` — Google Calendar (OAuth2)
