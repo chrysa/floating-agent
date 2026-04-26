@@ -1,0 +1,67 @@
+floating-agent — Python daemon
+daemon/floating_agent.egg-info/
+daemon/.ruff_cache/
+daemon/.mypy_cache/
+daemon/.pytest_cache/
+daemon/htmlcov/
+daemon/coverage.xml
+daemon/.coverage
+daemon/__pycache__/
+daemon/**/__pycache__/
+
+# Node / Electron / UI
+node_modules/
+electron/node_modules/
+electron/dist/
+electron/out/
+ui/node_modules/
+ui/dist/
+
+# Build outputs
+dist/
+build/
+out/
+release/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+
+# Electron
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.AppImage
+*.exe
+*.msi
