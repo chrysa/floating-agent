@@ -19,7 +19,7 @@ const UI_DEV_URL = "http://localhost:5173";
 const UI_PROD_PATH = path.join(__dirname, "../../ui/dist/index.html");
 
 let mainWindow: BrowserWindow | null = null;
-let tray: Tray | null = null;
+let _tray: Tray | null = null;
 let daemonProcess: ChildProcess | null = null;
 
 // ─── Daemon management ───────────────────────────────────────────────────────
@@ -29,11 +29,20 @@ function startDaemon(): void {
     ? path.join(__dirname, "../../daemon")
     : path.join(process.resourcesPath, "daemon");
 
-  daemonProcess = spawn("python3", ["-m", "uvicorn", "floating_agent.main:app",
-    "--host", "127.0.0.1",
-    "--port", String(DAEMON_PORT),
-    "--no-access-log",
-  ], { cwd: daemonDir, stdio: ["ignore", "pipe", "pipe"] });
+  daemonProcess = spawn(
+    "python3",
+    [
+      "-m",
+      "uvicorn",
+      "floating_agent.main:app",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      String(DAEMON_PORT),
+      "--no-access-log",
+    ],
+    { cwd: daemonDir, stdio: ["ignore", "pipe", "pipe"] },
+  );
 
   daemonProcess.stdout?.on("data", (data: Buffer) => {
     console.log(`[daemon] ${data.toString().trim()}`);
@@ -67,8 +76,8 @@ function createOverlayWindow(): BrowserWindow {
     movable: true,
     hasShadow: false,
     webPreferences: {
-      nodeIntegration: false,          // Security: no direct node access in renderer
-      contextIsolation: true,          // Security: isolated context
+      nodeIntegration: false, // Security: no direct node access in renderer
+      contextIsolation: true, // Security: isolated context
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -88,14 +97,17 @@ function createTray(win: BrowserWindow): Tray {
   const t = new Tray(icon);
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: "Show / Hide", click: () => win.isVisible() ? win.hide() : win.show() },
+    {
+      label: "Show / Hide",
+      click: () => (win.isVisible() ? win.hide() : win.show()),
+    },
     { type: "separator" },
     { label: "Quit", click: () => app.quit() },
   ]);
 
   t.setToolTip("Floating Agent");
   t.setContextMenu(contextMenu);
-  t.on("click", () => win.isVisible() ? win.hide() : win.show());
+  t.on("click", () => (win.isVisible() ? win.hide() : win.show()));
 
   return t;
 }
@@ -114,7 +126,7 @@ function registerIpcHandlers(): void {
 app.on("ready", () => {
   startDaemon();
   mainWindow = createOverlayWindow();
-  tray = createTray(mainWindow);
+  _tray = createTray(mainWindow);
   registerIpcHandlers();
 });
 
