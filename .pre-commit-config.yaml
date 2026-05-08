@@ -49,7 +49,7 @@ repos:
 
   # ─── Python quality ────────────────────────────────────────────────────────
   - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v0.1.1-57
+    rev: v0.1.1-63
     hooks:
       - id: debugger-detection
       - id: python-print-detection
