@@ -1,107 +1,194 @@
+---
 name: CI
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+    pull_request:
+        branches:
+            - main
+            - develop
+    push:
+        branches:
+            - main
+            - develop
+            - "feat/**"
+            - "fix/**"
+            - "chore/**"
+            - "ci/**"
+    workflow_dispatch:
+
+# Required for publish-unit-test-result-action and SonarCloud
+permissions:
+    checks: write
+    contents: read
+    pull-requests: write
+    statuses: write
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  # ─── Python daemon ─────────────────────────────────────────────────────────
-  daemon:
-    name: Daemon (Python)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: daemon
+    config:
+        name: Build matrix config
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        outputs:
+            python-versions: ${{ steps.matrix.outputs.python-versions }}
+            latest-python: ${{ steps.matrix.outputs.latest-python }}
+        steps:
+            - id: matrix
+              shell: bash
+              run: |
+                  echo 'python-versions=["3.12","3.13","3.14"]' >> "$GITHUB_OUTPUT"
+                  echo 'latest-python=3.14' >> "$GITHUB_OUTPUT"
 
-    steps:
-      - uses: actions/checkout@v6
+    # ─── Python daemon ───────────────────────────────────────────────────────
+    daemon-ruff:
+        name: Daemon · Ruff (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: pip
+            - name: Setup environment
+              uses: chrysa/github-actions/tool-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  extras: dev
+              working-directory: daemon
 
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
+            - name: Ruff checks
+              uses: chrysa/github-actions/ruff-check@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  latest-python: ${{ needs.config.outputs.latest-python }}
+                  sources: floating_agent tests
 
-      - name: Lint (ruff)
-        run: ruff check floating_agent
-
-      - name: Format check (ruff)
-        run: ruff format --check floating_agent
-
-      - name: Type check (mypy)
-        run: mypy floating_agent
-
-      - name: Tests (pytest)
-        run: pytest --cov=floating_agent --cov-report=xml --cov-report=term-missing
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v6
-        with:
-          files: daemon/coverage.xml
-          flags: daemon
+    daemon-mypy:
+        name: Daemon · Mypy (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
         continue-on-error: true
+        timeout-minutes: 20
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-  # ─── React UI ──────────────────────────────────────────────────────────────
-  ui:
-    name: UI (React + Vite)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
+            - name: Setup environment
+              uses: chrysa/github-actions/tool-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  extras: dev
+              working-directory: daemon
 
-    steps:
-      - uses: actions/checkout@v6
+            - name: Mypy checks
+              uses: chrysa/github-actions/mypy-check@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  latest-python: ${{ needs.config.outputs.latest-python }}
+                  config-file: daemon/pyproject.toml
+                  sources: floating_agent
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: ui/package-lock.json
+    daemon-test:
+        name: Daemon · Test (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Setup environment
+              uses: chrysa/github-actions/tool-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  extras: dev
+              working-directory: daemon
 
-      - name: Type check
-        run: npm run typecheck
+            - name: Run tests
+              uses: chrysa/github-actions/run-tests@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  latest-python: ${{ needs.config.outputs.latest-python }}
+                  cov-module: floating_agent
 
-      - name: Lint
-        run: npm run lint
+    # ─── React UI ────────────────────────────────────────────────────────────
+    ui:
+        name: UI · Lint, test & build
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
 
-      - name: Tests (Vitest)
-        run: npm test
+            - name: Setup Node.js
+              uses: chrysa/github-actions/node-setup@v1
+              with:
+                  working-directory: ui
+                  cache-dependency-path: ui/package-lock.json
 
-      - name: Build
-        run: npm run build
+            - name: ESLint + type-check + build
+              uses: chrysa/github-actions/eslint-check@v1
+              with:
+                  working-directory: ui
+                  build-script: build
 
-  # ─── Electron ──────────────────────────────────────────────────────────────
-  electron:
-    name: Electron (TypeScript)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: electron
+            - name: Vitest
+              uses: chrysa/github-actions/vitest-run@v1
+              with:
+                  working-directory: ui
+                  coverage-flags: ui
 
-    steps:
-      - uses: actions/checkout@v6
+    # ─── Electron ────────────────────────────────────────────────────────────
+    electron:
+        name: Electron · Lint & build
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: electron/package-lock.json
+            - name: Setup Node.js
+              uses: chrysa/github-actions/node-setup@v1
+              with:
+                  working-directory: electron
+                  cache-dependency-path: electron/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+            - name: ESLint + type-check + build
+              uses: chrysa/github-actions/eslint-check@v1
+              with:
+                  working-directory: electron
+                  build-script: build
 
-      - name: Type check
-        run: npm run typecheck
+    # ─── SonarCloud ──────────────────────────────────────────────────────────
+    sonar:
+        name: SonarCloud analysis
+        needs: [config, daemon-ruff, daemon-mypy, daemon-test]
+        if: always()
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
+            - name: SonarCloud scan
+              uses: chrysa/github-actions/sonar-scan@v1
+              with:
+                  latest-python: ${{ needs.config.outputs.latest-python }}
+                  sonar-token: ${{ secrets.SONAR_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  project-key: chrysa_floating-agent
+                  organization: chrysa
+                  project-name: floating-agent
+                  sources: daemon/floating_agent
+                  tests: daemon/tests
