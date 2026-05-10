@@ -76,7 +76,7 @@ test-daemon: ## Run daemon tests (pytest)
 
 .PHONY: test-cov
 test-cov: ## Run daemon tests with coverage
-	cd $(DAEMON_DIR) && pytest --cov=floating_agent --cov-report=term-missing --cov-report=xml
+	cd $(DAEMON_DIR) && pytest --cov=floating_agent --cov-report=term-missing --cov-report=xml --cov-fail-under=85
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint & Format
