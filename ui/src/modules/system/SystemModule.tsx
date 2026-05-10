@@ -30,8 +30,14 @@ export default function SystemModule() {
     <div className={styles.card}>
       <h3 className={styles.title}>System</h3>
       <GaugeBar value={data.cpu_percent} label="CPU" />
-      <GaugeBar value={data.ram_percent} label={`RAM ${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`} />
-      <GaugeBar value={data.disk_percent} label={`Disk ${data.disk_used_gb.toFixed(0)} / ${data.disk_total_gb.toFixed(0)} GB`} />
+      <GaugeBar
+        value={data.ram_percent}
+        label={`RAM ${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`}
+      />
+      <GaugeBar
+        value={data.disk_percent}
+        label={`Disk ${data.disk_used_gb.toFixed(0)} / ${data.disk_total_gb.toFixed(0)} GB`}
+      />
     </div>
   );
 }
