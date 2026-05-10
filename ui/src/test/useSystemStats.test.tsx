@@ -5,7 +5,9 @@ import { useSystemStats } from "../modules/system/useSystemStats";
 import type { ReactNode } from "react";
 
 // Mock getDaemonUrl
-vi.mock("@/lib/daemon", () => ({ getDaemonUrl: () => Promise.resolve("http://mock-daemon") }));
+vi.mock("@/lib/daemon", () => ({
+  getDaemonUrl: () => Promise.resolve("http://mock-daemon"),
+}));
 
 const mockStats = {
   cpu_percent: 42.5,
@@ -30,8 +32,8 @@ describe("useSystemStats", () => {
         Promise.resolve({
           ok: true,
           json: () => Promise.resolve(mockStats),
-        } as Response)
-      )
+        } as Response),
+      ),
     );
   });
 

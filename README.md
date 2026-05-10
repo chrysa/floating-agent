@@ -5,7 +5,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An open-source floating multi-OS AI assistant that runs on **Windows** and **Linux**.  
+An open-source floating multi-OS AI assistant that runs on **Windows** and **Linux**.
 Always-on-top overlay providing quick access to AI, system monitoring, Notion project status, calendar, messaging, and productivity tools — without leaving your current context.
 
 ---
@@ -62,24 +62,24 @@ make package    # Package for current OS
 
 ## Platform Support
 
-| Platform | Status | Overlay method |
-|----------|--------|----------------|
-| Linux (X11) | 🚧 In progress | `alwaysOnTop` |
-| Linux (Wayland) | 📋 Planned | `wlr-layer-shell` |
-| Windows 10/11 | 📋 Planned | Win32 API |
+| Platform        | Status         | Overlay method    |
+| --------------- | -------------- | ----------------- |
+| Linux (X11)     | 🚧 In progress | `alwaysOnTop`     |
+| Linux (Wayland) | 📋 Planned     | `wlr-layer-shell` |
+| Windows 10/11   | 📋 Planned     | Win32 API         |
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Shell | Electron 32+ |
-| UI | React 19 + Vite 7 + TypeScript 5 |
-| Daemon | Python 3.12 + FastAPI |
-| System info | psutil |
-| Secrets | OS keychain (keyring) |
-| AI | chrysa/ai-aggregator |
-| Tests | Vitest + pytest |
-| Packaging | electron-builder |
+| Layer       | Technology                       |
+| ----------- | -------------------------------- |
+| Shell       | Electron 32+                     |
+| UI          | React 19 + Vite 7 + TypeScript 5 |
+| Daemon      | Python 3.12 + FastAPI            |
+| System info | psutil                           |
+| Secrets     | OS keychain (keyring)            |
+| AI          | chrysa/ai-aggregator             |
+| Tests       | Vitest + pytest                  |
+| Packaging   | electron-builder                 |
 
 ## Security
 
