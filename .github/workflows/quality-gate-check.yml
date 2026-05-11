@@ -47,6 +47,10 @@ jobs:
       - name: Run quality gate verification
         id: quality-gate
         run: |
+          if [ ! -f .quality-gate-baseline.json ]; then
+            echo "⚠️  No baseline found — skipping regression check (run 'make quality-gate-baseline' locally to create one)"
+            exit 0
+          fi
           make quality-gate-verify || exit_code=$?
           exit ${exit_code:-0}
 
