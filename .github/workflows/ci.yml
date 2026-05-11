@@ -60,7 +60,6 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
                   extras: dev
-              working-directory: daemon
 
             - name: Ruff checks
               uses: chrysa/github-actions/ruff-check@v1
@@ -87,7 +86,6 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
                   extras: dev
-              working-directory: daemon
 
             - name: Mypy checks
               uses: chrysa/github-actions/mypy-check@v1
@@ -114,7 +112,6 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
                   extras: dev
-              working-directory: daemon
 
             - name: Run tests
               uses: chrysa/github-actions/run-tests@v1
