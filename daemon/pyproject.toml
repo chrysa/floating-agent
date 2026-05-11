@@ -7,7 +7,7 @@ name = "floating-agent-daemon"
 version = "0.1.0"
 description = "Python daemon sidecar for the Floating Multi-OS AI Assistant"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.34",
@@ -33,15 +33,15 @@ where = ["."]
 include = ["floating_agent*"]
 
 [tool.ruff]
-line-length = 100
-target-version = "py312"
+line-length = 120
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP", "S", "B", "A", "C4", "PT", "SIM", "TCH"]
 ignore = ["S101"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 strict = true
 ignore_missing_imports = true
 
