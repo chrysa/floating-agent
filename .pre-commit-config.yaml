@@ -47,14 +47,14 @@ repos:
 
   # ─── Python type check ─────────────────────────────────────────────────────
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.0.0
+    rev: v2.1.0
     hooks:
       - id: mypy
         files: ^daemon/
 
   # ─── Python quality ────────────────────────────────────────────────────────
   - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v0.1.1-73
+    rev: v0.1.1-75
     hooks:
       - id: debugger-detection
       - id: python-print-detection
