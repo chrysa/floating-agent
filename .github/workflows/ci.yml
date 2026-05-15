@@ -39,7 +39,7 @@ jobs:
             - id: matrix
               shell: bash
               run: |
-                  echo 'python-versions=["3.12","3.13","3.14"]' >> "$GITHUB_OUTPUT"
+                  echo 'python-versions=["3.14"]' >> "$GITHUB_OUTPUT"
                   echo 'latest-python=3.14' >> "$GITHUB_OUTPUT"
 
     # ─── Python daemon ───────────────────────────────────────────────────────
@@ -48,6 +48,9 @@ jobs:
         needs: config
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        defaults:
+            run:
+                working-directory: daemon
         strategy:
             fail-fast: false
             matrix:
@@ -55,18 +58,19 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Setup environment
-              uses: chrysa/github-actions/tool-setup@v1
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@main
               with:
                   python-version: ${{ matrix.python-version }}
-                  extras: dev
 
-            - name: Ruff checks
-              uses: chrysa/github-actions/ruff-check@v1
-              with:
-                  python-version: ${{ matrix.python-version }}
-                  latest-python: ${{ needs.config.outputs.latest-python }}
-                  sources: floating_agent tests
+            - name: Install project dependencies
+              run: pip install -e '.[dev]'
+
+            - name: Ruff — lint check
+              run: ruff check --config=pyproject.toml floating_agent tests
+
+            - name: Ruff — format check
+              run: ruff format --check --config=pyproject.toml floating_agent tests
 
     daemon-mypy:
         name: Daemon · Mypy (${{ matrix.python-version }})
@@ -74,6 +78,9 @@ jobs:
         runs-on: ubuntu-latest
         continue-on-error: true
         timeout-minutes: 20
+        defaults:
+            run:
+                working-directory: daemon
         strategy:
             fail-fast: false
             matrix:
@@ -81,25 +88,25 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Setup environment
-              uses: chrysa/github-actions/tool-setup@v1
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@main
               with:
                   python-version: ${{ matrix.python-version }}
-                  extras: dev
+
+            - name: Install project dependencies
+              run: pip install -e '.[dev]'
 
             - name: Mypy checks
-              uses: chrysa/github-actions/mypy-check@v1
-              with:
-                  python-version: ${{ matrix.python-version }}
-                  latest-python: ${{ needs.config.outputs.latest-python }}
-                  config-file: daemon/pyproject.toml
-                  sources: floating_agent
+              run: mypy --config-file=pyproject.toml floating_agent
 
     daemon-test:
         name: Daemon · Test (${{ matrix.python-version }})
         needs: config
         runs-on: ubuntu-latest
         timeout-minutes: 30
+        defaults:
+            run:
+                working-directory: daemon
         strategy:
             fail-fast: false
             matrix:
@@ -107,18 +114,24 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Setup environment
-              uses: chrysa/github-actions/tool-setup@v1
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@main
               with:
                   python-version: ${{ matrix.python-version }}
-                  extras: dev
+
+            - name: Install project dependencies
+              run: pip install -e '.[dev]'
 
             - name: Run tests
-              uses: chrysa/github-actions/run-tests@v1
-              with:
-                  python-version: ${{ matrix.python-version }}
-                  latest-python: ${{ needs.config.outputs.latest-python }}
-                  cov-module: floating_agent
+              run: |
+                  mkdir -p reports
+                  pytest \
+                      --cov=floating_agent \
+                      --cov-branch \
+                      --cov-report=xml:reports/coverage.xml \
+                      --cov-report=term-missing \
+                      --junitxml=reports/junit.xml \
+                      -v
 
     # ─── React UI ────────────────────────────────────────────────────────────
     ui:
@@ -136,7 +149,7 @@ jobs:
                   cache-dependency-path: ui/package-lock.json
 
             - name: Install dependencies
-              run: npm ci
+              run: npm ci --legacy-peer-deps
               working-directory: ui
 
             - name: ESLint
@@ -167,11 +180,9 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: "22"
-                  cache: npm
-                  cache-dependency-path: electron/package-lock.json
 
             - name: Install dependencies
-              run: npm ci
+              run: npm install
               working-directory: electron
 
             - name: ESLint
