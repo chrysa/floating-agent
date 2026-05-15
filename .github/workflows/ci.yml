@@ -163,7 +163,7 @@ jobs:
               working-directory: ui
 
             - name: Vitest
-              run: npm run test -- --coverage --reporter=lcov
+              run: npm run test -- --coverage --coverage.reporter=lcov
               working-directory: ui
 
     # ─── Electron ────────────────────────────────────────────────────────────
