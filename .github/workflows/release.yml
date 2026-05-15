@@ -1,76 +1,15 @@
+---
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
-
-permissions:
-  contents: write
+    push:
+        branches: [main, master]
+        paths-ignore:
+            - '**.md'
+            - .github/**
+    workflow_dispatch:
 
 jobs:
-  release-linux:
-    name: Package Linux
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install all dependencies
-        run: |
-          npm ci --prefix ui
-          npm ci --prefix electron
-
-      - name: Build UI
-        run: npm run build --prefix ui
-
-      - name: Build Electron
-        run: npm run build --prefix electron
-
-      - name: Package Linux
-        run: npm run package:linux --prefix electron
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: floating-agent-linux
-          path: electron/out/*.AppImage
-
-  release-github:
-    name: Create GitHub Release
-    needs: [release-linux]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Generate changelog
-        uses: orhun/git-cliff-action@v4.8.0
-        with:
-          config: cliff.toml
-          args: --latest --strip header
-        id: git_cliff
-
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: floating-agent-linux
-          path: artifacts/
-
-      - name: Create release
-        uses: softprops/action-gh-release@v3
-        with:
-          body: ${{ steps.git_cliff.outputs.content }}
-          files: artifacts/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    call:
+        uses: chrysa/github-actions/.github/workflows/release.yml@main
+        secrets: inherit

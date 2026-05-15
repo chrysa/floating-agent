@@ -1,5 +1,7 @@
 # CLAUDE.md — floating-agent
 
+> **Claude Code**: also read `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md` for code specifications.
+
 ## Vision
 
 🪄 Floating Multi-OS AI Assistant — an always-on-top overlay running on Windows and Linux
