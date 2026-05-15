@@ -71,12 +71,14 @@ test-ui: ## Run UI tests (Vitest)
 	$(NPM) run test --prefix $(UI_DIR)
 
 .PHONY: test-daemon
-test-daemon: ## Run daemon tests (pytest)
-	cd $(DAEMON_DIR) && pytest
+test-daemon: ## Run daemon tests in Docker
+	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
+	docker run --rm floating-agent-test
 
 .PHONY: test-cov
-test-cov: ## Run daemon tests with coverage
-	cd $(DAEMON_DIR) && pytest --cov=floating_agent --cov-report=term-missing --cov-report=xml --cov-fail-under=85
+test-cov: ## Run daemon tests with coverage in Docker
+	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
+	docker run --rm floating-agent-test
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint & Format

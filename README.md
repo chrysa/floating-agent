@@ -68,6 +68,32 @@ make package    # Package for current OS
 | Linux (Wayland) | 📋 Planned     | `wlr-layer-shell` |
 | Windows 10/11   | 📋 Planned     | Win32 API         |
 
+## Roadmap
+
+### V0.2 — Extended monitoring
+
+- [ ] **Network plugin** — bandwidth ↑↓ MB/s, active connections count (`psutil.net_io_counters`)
+- [ ] **Processes plugin** — top 5 by CPU/RAM, kill action from UI (`psutil.process_iter`)
+- [ ] **Alert thresholds** — configurable via env/config, `/alerts` endpoint, alert badge in overlay
+
+### V0.3 — Dev environment awareness
+
+- [ ] **Docker plugin** — container list with status, CPU/RAM per container (Docker socket)
+- [ ] **Metrics history** — in-memory ring buffer (60 readings = 3 min), sparkline charts in UI
+- [ ] **Notion plugin** — project status cards from Centre de suivi
+
+### V0.4 — Integrations
+
+- [ ] **Calendar plugin** — Google Calendar upcoming events
+- [ ] **AI chat module** — quick prompt → ai-aggregator → answer in overlay
+
+### V1.0 — AI-first dev companion
+
+- [ ] **Self-healing engine** — condition → action rules (YAML config): e.g. CPU > 90% → kill top process
+- [ ] **AI script assistant** — natural language → executable shell command (generated + confirmed before run)
+- [ ] **Wayland support** — `wlr-layer-shell` native integration
+- [ ] **Windows packaging** — NSIS installer, Win32 always-on-top
+
 ## Stack
 
 | Layer       | Technology                       |
