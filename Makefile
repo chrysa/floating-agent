@@ -75,6 +75,9 @@ test-daemon: ## Run daemon tests in Docker
 	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
 	docker run --rm floating-agent-test
 
+.PHONY: docker-test
+docker-test: test-daemon ## Alias for CI-compatible docker-based test
+
 .PHONY: test-cov
 test-cov: ## Run daemon tests with coverage in Docker
 	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
