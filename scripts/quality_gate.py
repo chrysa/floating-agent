@@ -277,9 +277,6 @@ class QualityGate:
             target = threshold_cfg.get("value", baseline_metric)
             current_metric = current.get("metric", 0)
 
-            passed = True
-            reason = "ok"
-
             passed, reason = self._evaluate_gate_status(
                 baseline_valid, current, current_metric, target, operator
             )
