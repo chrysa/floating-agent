@@ -73,7 +73,7 @@ class QualityGate:
     def _parse_coverage(self, output: str) -> float:
         for line in output.splitlines():
             if any(token in line.lower() for token in ["total", "coverage", "covered"]):
-                for value in re.findall(r"(\d+(?:\.\d+)?)%", line):
+                for value in re.findall(r"(\d{1,10}(?:\.\d{1,6})?)%", line):  # bounded to prevent ReDoS
                     try:
                         return float(value)
                     except ValueError:
@@ -81,13 +81,13 @@ class QualityGate:
         return -1.0
 
     def _parse_warning_count(self, output: str) -> int:
-        match = re.search(r"(\d+)\s+warnings?", output, flags=re.IGNORECASE)
+        match = re.search(r"(\d{1,10})\s{1,100}warnings?", output, flags=re.IGNORECASE)  # bounded to prevent ReDoS
         if match:
             return int(match.group(1))
         return 0
 
     def _parse_error_count(self, output: str) -> int:
-        match = re.search(r"(\d+)\s+errors?", output, flags=re.IGNORECASE)
+        match = re.search(r"(\d{1,10})\s{1,100}errors?", output, flags=re.IGNORECASE)  # bounded to prevent ReDoS
         if match:
             return int(match.group(1))
         return 0
