@@ -1,8 +1,14 @@
 import { useSystemStats } from "./useSystemStats";
 import styles from "./SystemModule.module.scss";
 
+function gaugeColor(value: number): string {
+  if (value > 85) return "#ef4444";
+  if (value > 60) return "#f59e0b";
+  return "#22c55e";
+}
+
 function GaugeBar({ value, label }: { value: number; label: string }) {
-  const color = value > 85 ? "#ef4444" : value > 60 ? "#f59e0b" : "#22c55e";
+  const color = gaugeColor(value);
   return (
     <div className={styles.gauge}>
       <div className={styles.gaugeLabel}>

@@ -83,10 +83,10 @@ function createOverlayWindow(): BrowserWindow {
   });
 
   if (IS_DEV) {
-    void win.loadURL(UI_DEV_URL);
+    win.loadURL(UI_DEV_URL).catch(() => {});
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    void win.loadFile(UI_PROD_PATH);
+    win.loadFile(UI_PROD_PATH).catch(() => {});
   }
 
   return win;

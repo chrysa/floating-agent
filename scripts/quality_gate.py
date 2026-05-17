@@ -22,6 +22,9 @@ class QualityGate:
     BASELINE_FILE = ".quality-gate-baseline.json"
     LAST_REPORT_FILE = ".quality-gate-last-report.json"
 
+    _RESULT_PASS = "OVERALL_RESULT|PASS"
+    _RESULT_FAIL = "OVERALL_RESULT|FAIL"
+
     def __init__(self) -> None:
         self.config_path = Path(self.CONFIG_FILE)
         self.baseline_path = Path(self.BASELINE_FILE)
@@ -40,8 +43,20 @@ class QualityGate:
             ("Lint", "lint", "warning_count", "=", "make lint"),
             ("Types", "types", "error_count", "≤", "make type-check"),
             ("Build", "build", "build_status", "=", "make build"),
-            ("Secrets", "security_secrets", "secret_count", "=", "detect-secrets scan --all-files 2>&1 || true"),
-            ("VulnDeps", "security_vulns", "vuln_count", "≤", "pip-audit 2>&1 || npm audit --audit-level=high 2>&1 || true"),
+            (
+                "Secrets",
+                "security_secrets",
+                "secret_count",
+                "=",
+                "detect-secrets scan --all-files 2>&1 || true",
+            ),
+            (
+                "VulnDeps",
+                "security_vulns",
+                "vuln_count",
+                "≤",
+                "pip-audit 2>&1 || npm audit --audit-level=high 2>&1 || true",
+            ),
         ]
 
     def _run(self, cmd: str) -> Tuple[int, str]:
@@ -73,7 +88,9 @@ class QualityGate:
     def _parse_coverage(self, output: str) -> float:
         for line in output.splitlines():
             if any(token in line.lower() for token in ["total", "coverage", "covered"]):
-                for value in re.findall(r"(\d{1,10}(?:\.\d{1,6})?)%", line):  # bounded to prevent ReDoS
+                for value in re.findall(
+                    r"(\d{1,10}(?:\.\d{1,6})?)%", line
+                ):  # bounded to prevent ReDoS
                     try:
                         return float(value)
                     except ValueError:
@@ -81,13 +98,17 @@ class QualityGate:
         return -1.0
 
     def _parse_warning_count(self, output: str) -> int:
-        match = re.search(r"(\d{1,10})\s{1,100}warnings?", output, flags=re.IGNORECASE)  # bounded to prevent ReDoS
+        match = re.search(
+            r"(\d{1,10})\s{1,100}warnings?", output, flags=re.IGNORECASE
+        )  # bounded to prevent ReDoS
         if match:
             return int(match.group(1))
         return 0
 
     def _parse_error_count(self, output: str) -> int:
-        match = re.search(r"(\d{1,10})\s{1,100}errors?", output, flags=re.IGNORECASE)  # bounded to prevent ReDoS
+        match = re.search(
+            r"(\d{1,10})\s{1,100}errors?", output, flags=re.IGNORECASE
+        )  # bounded to prevent ReDoS
         if match:
             return int(match.group(1))
         return 0
@@ -144,7 +165,9 @@ class QualityGate:
             return current <= target
         return False
 
-    def _run_gate(self, gate_name: str, key: str, metric_name: str, default_cmd: str) -> Dict[str, Any]:
+    def _run_gate(
+        self, gate_name: str, key: str, metric_name: str, default_cmd: str
+    ) -> Dict[str, Any]:
         cmd = self.config.get("commands", {}).get(key, default_cmd)
         print(f"RUN_GATE|{gate_name}|{cmd}")
         exit_code, output = self._run(cmd)
@@ -196,12 +219,32 @@ class QualityGate:
         self._write_report(report)
 
         if all_ok:
-            print("OVERALL_RESULT|PASS")
+            print(self._RESULT_PASS)
             return True
 
-        print("OVERALL_RESULT|FAIL")
-        print("ERROR: baseline contains failing gates; fix quality checks before using this baseline")
+        print(self._RESULT_FAIL)
+        print(
+            "ERROR: baseline contains failing gates; fix quality checks before using this baseline"
+        )
         return False
+
+    def _evaluate_gate_status(
+        self,
+        baseline_valid: bool,
+        current: Dict[str, Any],
+        current_metric: Any,
+        target: Any,
+        operator: str,
+    ) -> Tuple[bool, str]:
+        if not baseline_valid:
+            return False, "invalid_baseline"
+        if current.get("exit_code", 1) != 0:
+            return False, "command_failed"
+        try:
+            passed = self._compare(current_metric, target, operator)
+            return passed, "ok" if passed else "metric_regression"
+        except Exception:
+            return False, "comparison_error"
 
     def verify(self) -> bool:
         print("VERIFY|START")
@@ -213,7 +256,7 @@ class QualityGate:
                 "baseline_file": str(self.baseline_path),
             }
             self._write_report(report)
-            print("OVERALL_RESULT|FAIL")
+            print(self._RESULT_FAIL)
             print("ERROR: baseline file not found; run quality-gate-baseline first")
             return False
 
@@ -237,20 +280,9 @@ class QualityGate:
             passed = True
             reason = "ok"
 
-            if not baseline_valid:
-                passed = False
-                reason = "invalid_baseline"
-            elif current.get("exit_code", 1) != 0:
-                passed = False
-                reason = "command_failed"
-            else:
-                try:
-                    passed = self._compare(current_metric, target, operator)
-                    if not passed:
-                        reason = "metric_regression"
-                except Exception:
-                    passed = False
-                    reason = "comparison_error"
+            passed, reason = self._evaluate_gate_status(
+                baseline_valid, current, current_metric, target, operator
+            )
 
             if not passed:
                 all_passed = False
@@ -287,10 +319,10 @@ class QualityGate:
         self._write_report(report)
 
         if all_passed:
-            print("OVERALL_RESULT|PASS")
+            print(self._RESULT_PASS)
             return True
 
-        print("OVERALL_RESULT|FAIL")
+        print(self._RESULT_FAIL)
         return False
 
 
