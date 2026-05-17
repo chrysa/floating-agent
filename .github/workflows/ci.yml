@@ -16,12 +16,7 @@ on:
             - "ci/**"
     workflow_dispatch:
 
-# Required for publish-unit-test-result-action and SonarCloud
-permissions:
-    checks: write
-    contents: read
-    pull-requests: write
-    statuses: write
+permissions: {}
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,6 +27,8 @@ jobs:
         name: Build matrix config
         runs-on: ubuntu-latest
         timeout-minutes: 5
+        permissions:
+            contents: read
         outputs:
             python-versions: ${{ steps.matrix.outputs.python-versions }}
             latest-python: ${{ steps.matrix.outputs.latest-python }}
@@ -48,6 +45,8 @@ jobs:
         needs: config
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        permissions:
+            contents: read
         defaults:
             run:
                 working-directory: daemon
@@ -88,6 +87,8 @@ jobs:
         runs-on: ubuntu-latest
         continue-on-error: true
         timeout-minutes: 20
+        permissions:
+            contents: read
         defaults:
             run:
                 working-directory: daemon
@@ -124,6 +125,8 @@ jobs:
         needs: config
         runs-on: ubuntu-latest
         timeout-minutes: 30
+        permissions:
+            contents: read
         defaults:
             run:
                 working-directory: daemon
@@ -166,6 +169,8 @@ jobs:
         name: UI · Lint, test & build
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        permissions:
+            contents: read
         steps:
             - uses: actions/checkout@v6
 
@@ -198,6 +203,8 @@ jobs:
     electron:
         name: Electron · Lint & build
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         timeout-minutes: 15
         steps:
             - uses: actions/checkout@v6
@@ -230,15 +237,20 @@ jobs:
         if: always()
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        permissions:
+            contents: read
+            checks: write
+            pull-requests: write
+            statuses: write
         steps:
             - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
 
             - name: SonarCloud scan
-              uses: chrysa/github-actions/sonar-scan@v1
+              uses: chrysa/github-actions/sonar-scan-python@main
               with:
-                  latest-python: ${{ needs.config.outputs.latest-python }}
+                  python-version: ${{ needs.config.outputs.latest-python }}
                   sonar-token: ${{ secrets.SONAR_TOKEN }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   project-key: chrysa_floating-agent
