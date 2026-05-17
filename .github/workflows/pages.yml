@@ -16,4 +16,3 @@ concurrency:
 jobs:
     call:
         uses: chrysa/github-actions/.github/workflows/pages.yml@main
-        secrets: inherit
