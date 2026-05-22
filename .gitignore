@@ -65,3 +65,6 @@ coverage.xml
 *.AppImage
 *.exe
 *.msi
+
+# CodeGraph (local index — never commit)
+.codegraph/
