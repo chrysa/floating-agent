@@ -1,0 +1,10 @@
+---
+name: PR Dependency Check
+
+on:
+    pull_request_target:
+        types: [closed, edited, opened, reopened]
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/dependencies.yml@main

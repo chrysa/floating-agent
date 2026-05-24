@@ -1,8 +1,14 @@
 import { useSystemStats } from "./useSystemStats";
 import styles from "./SystemModule.module.scss";
 
+function gaugeColor(value: number): string {
+  if (value > 85) return "#ef4444";
+  if (value > 60) return "#f59e0b";
+  return "#22c55e";
+}
+
 function GaugeBar({ value, label }: { value: number; label: string }) {
-  const color = value > 85 ? "#ef4444" : value > 60 ? "#f59e0b" : "#22c55e";
+  const color = gaugeColor(value);
   return (
     <div className={styles.gauge}>
       <div className={styles.gaugeLabel}>
@@ -30,8 +36,14 @@ export default function SystemModule() {
     <div className={styles.card}>
       <h3 className={styles.title}>System</h3>
       <GaugeBar value={data.cpu_percent} label="CPU" />
-      <GaugeBar value={data.ram_percent} label={`RAM ${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`} />
-      <GaugeBar value={data.disk_percent} label={`Disk ${data.disk_used_gb.toFixed(0)} / ${data.disk_total_gb.toFixed(0)} GB`} />
+      <GaugeBar
+        value={data.ram_percent}
+        label={`RAM ${data.ram_used_gb.toFixed(1)} / ${data.ram_total_gb.toFixed(1)} GB`}
+      />
+      <GaugeBar
+        value={data.disk_percent}
+        label={`Disk ${data.disk_used_gb.toFixed(0)} / ${data.disk_total_gb.toFixed(0)} GB`}
+      />
     </div>
   );
 }

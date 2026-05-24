@@ -19,6 +19,12 @@ branches:
     tag: alpha
     increment: Minor
 
+  feat:
+    regex: ^feat[/-]
+    mode: ContinuousDelivery
+    tag: useBranchName
+    increment: Inherit
+
   feature:
     regex: ^features?[/-]
     mode: ContinuousDelivery

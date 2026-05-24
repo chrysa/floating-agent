@@ -1,0 +1,10 @@
+---
+name: Enforce Feature Branch Policy
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/enforce-feature-branch.yml@main

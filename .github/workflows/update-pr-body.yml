@@ -1,0 +1,10 @@
+---
+name: Update PR body
+
+on:
+    pull_request:
+        types: [opened, synchronize]
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/update-pr-body.yml@main

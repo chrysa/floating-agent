@@ -1,0 +1,13 @@
+---
+name: Label when approved
+
+on:
+    pull_request_review:
+
+concurrency:
+    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/approved-label.yml@main

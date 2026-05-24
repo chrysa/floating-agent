@@ -1,0 +1,9 @@
+---
+name: Label Pull Request Size
+
+on:
+    pull_request_target:
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/pull-request-size.yml@main

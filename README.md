@@ -5,7 +5,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An open-source floating multi-OS AI assistant that runs on **Windows** and **Linux**.  
+An open-source floating multi-OS AI assistant that runs on **Windows** and **Linux**.
 Always-on-top overlay providing quick access to AI, system monitoring, Notion project status, calendar, messaging, and productivity tools — without leaving your current context.
 
 ---
@@ -62,24 +62,50 @@ make package    # Package for current OS
 
 ## Platform Support
 
-| Platform | Status | Overlay method |
-|----------|--------|----------------|
-| Linux (X11) | 🚧 In progress | `alwaysOnTop` |
-| Linux (Wayland) | 📋 Planned | `wlr-layer-shell` |
-| Windows 10/11 | 📋 Planned | Win32 API |
+| Platform        | Status         | Overlay method    |
+| --------------- | -------------- | ----------------- |
+| Linux (X11)     | 🚧 In progress | `alwaysOnTop`     |
+| Linux (Wayland) | 📋 Planned     | `wlr-layer-shell` |
+| Windows 10/11   | 📋 Planned     | Win32 API         |
+
+## Roadmap
+
+### V0.2 — Extended monitoring
+
+- [ ] **Network plugin** — bandwidth ↑↓ MB/s, active connections count (`psutil.net_io_counters`)
+- [ ] **Processes plugin** — top 5 by CPU/RAM, kill action from UI (`psutil.process_iter`)
+- [ ] **Alert thresholds** — configurable via env/config, `/alerts` endpoint, alert badge in overlay
+
+### V0.3 — Dev environment awareness
+
+- [ ] **Docker plugin** — container list with status, CPU/RAM per container (Docker socket)
+- [ ] **Metrics history** — in-memory ring buffer (60 readings = 3 min), sparkline charts in UI
+- [ ] **Notion plugin** — project status cards from Centre de suivi
+
+### V0.4 — Integrations
+
+- [ ] **Calendar plugin** — Google Calendar upcoming events
+- [ ] **AI chat module** — quick prompt → ai-aggregator → answer in overlay
+
+### V1.0 — AI-first dev companion
+
+- [ ] **Self-healing engine** — condition → action rules (YAML config): e.g. CPU > 90% → kill top process
+- [ ] **AI script assistant** — natural language → executable shell command (generated + confirmed before run)
+- [ ] **Wayland support** — `wlr-layer-shell` native integration
+- [ ] **Windows packaging** — NSIS installer, Win32 always-on-top
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Shell | Electron 32+ |
-| UI | React 19 + Vite 7 + TypeScript 5 |
-| Daemon | Python 3.12 + FastAPI |
-| System info | psutil |
-| Secrets | OS keychain (keyring) |
-| AI | chrysa/ai-aggregator |
-| Tests | Vitest + pytest |
-| Packaging | electron-builder |
+| Layer       | Technology                       |
+| ----------- | -------------------------------- |
+| Shell       | Electron 32+                     |
+| UI          | React 19 + Vite 7 + TypeScript 5 |
+| Daemon      | Python 3.12 + FastAPI            |
+| System info | psutil                           |
+| Secrets     | OS keychain (keyring)            |
+| AI          | chrysa/ai-aggregator             |
+| Tests       | Vitest + pytest                  |
+| Packaging   | electron-builder                 |
 
 ## Security
 

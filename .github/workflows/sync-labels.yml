@@ -1,0 +1,15 @@
+---
+name: Sync GitHub Labels
+
+on:
+    push:
+        branches: [main, master, develop]
+        paths:
+            - .github/labels.yml
+    schedule:
+        - cron: '0 2 * * 1'
+    workflow_dispatch:
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/sync-labels.yml@main

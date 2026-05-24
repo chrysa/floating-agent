@@ -1,0 +1,16 @@
+---
+name: Actionlint
+
+on:
+    pull_request:
+        paths:
+            - .github/actionlint.yaml
+            - .github/workflows/**
+    push:
+        branches: [main, master, develop]
+        paths:
+            - .github/workflows/**
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/action-check.yml@main

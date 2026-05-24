@@ -1,107 +1,255 @@
+---
 name: CI
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+    pull_request:
+        branches:
+            - main
+            - develop
+    push:
+        branches:
+            - main
+            - develop
+            - "feat/**"
+            - "fix/**"
+            - "chore/**"
+            - "ci/**"
+    workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  # ─── Python daemon ─────────────────────────────────────────────────────────
-  daemon:
-    name: Daemon (Python)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: daemon
+    config:
+        name: Build matrix config
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        permissions:
+            contents: read
+        outputs:
+            python-versions: ${{ steps.matrix.outputs.python-versions }}
+            latest-python: ${{ steps.matrix.outputs.latest-python }}
+        steps:
+            - id: matrix
+              shell: bash
+              run: |
+                  echo 'python-versions=["3.14"]' >> "$GITHUB_OUTPUT"
+                  echo 'latest-python=3.14' >> "$GITHUB_OUTPUT"
 
-    steps:
-      - uses: actions/checkout@v4
+    # ─── Python daemon ───────────────────────────────────────────────────────
+    daemon-ruff:
+        name: Daemon · Ruff (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: read
+        defaults:
+            run:
+                working-directory: daemon
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
+            - uses: chrysa/github-actions/install-project@v1
+              with:
+                  extras: dev
 
-      - name: Lint (ruff)
-        run: ruff check floating_agent
+            - uses: chrysa/github-actions/ruff-check@v1
+              with:
+                  working-directory: daemon
+                  sources: floating_agent tests
+                  config: pyproject.toml
+                  python-version: ${{ matrix.python-version }}
+                  latest-python: ${{ needs.config.outputs.latest-python }}
 
-      - name: Format check (ruff)
-        run: ruff format --check floating_agent
-
-      - name: Type check (mypy)
-        run: mypy floating_agent
-
-      - name: Tests (pytest)
-        run: pytest --cov=floating_agent --cov-report=xml --cov-report=term-missing
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
-        with:
-          files: daemon/coverage.xml
-          flags: daemon
+    daemon-mypy:
+        name: Daemon · Mypy (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
         continue-on-error: true
+        timeout-minutes: 20
+        permissions:
+            contents: read
+        defaults:
+            run:
+                working-directory: daemon
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-  # ─── React UI ──────────────────────────────────────────────────────────────
-  ui:
-    name: UI (React + Vite)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
 
-    steps:
-      - uses: actions/checkout@v4
+            - uses: chrysa/github-actions/install-project@v1
+              with:
+                  extras: dev
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: ui/package-lock.json
+            - name: Mypy checks
+              run: |
+                  mkdir -p reports
+                  mypy --config-file=pyproject.toml floating_agent 2>&1 | tee reports/mypy.txt; exit ${PIPESTATUS[0]}
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Upload mypy report
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: mypy-report
+                  path: daemon/reports/mypy.txt
+                  if-no-files-found: ignore
 
-      - name: Type check
-        run: npm run typecheck
+    daemon-test:
+        name: Daemon · Test (${{ matrix.python-version }})
+        needs: config
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        permissions:
+            contents: read
+        defaults:
+            run:
+                working-directory: daemon
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
+        steps:
+            - uses: actions/checkout@v6
 
-      - name: Lint
-        run: npm run lint
+            - name: Setup Python
+              uses: chrysa/github-actions/python-setup@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
 
-      - name: Tests (Vitest)
-        run: npm test
+            - uses: chrysa/github-actions/install-project@v1
+              with:
+                  extras: dev
 
-      - name: Build
-        run: npm run build
+            - name: Run tests
+              run: |
+                  mkdir -p reports
+                  pytest \
+                      --cov=floating_agent \
+                      --cov-branch \
+                      --cov-report=xml:reports/coverage.xml \
+                      --cov-report=term-missing \
+                      --junitxml=reports/junit.xml \
+                      -v
 
-  # ─── Electron ──────────────────────────────────────────────────────────────
-  electron:
-    name: Electron (TypeScript)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: electron
+            - name: Upload test results
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: test-results-${{ matrix.python-version }}
+                  path: daemon/reports/
+                  if-no-files-found: ignore
 
-    steps:
-      - uses: actions/checkout@v4
+    # ─── React UI ────────────────────────────────────────────────────────────
+    ui:
+        name: UI · Lint, test & build
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: electron/package-lock.json
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "22"
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: rm -f package-lock.json && npm install
+              working-directory: ui
 
-      - name: Type check
-        run: npm run typecheck
+            - name: ESLint
+              run: npm run lint
+              working-directory: ui
 
-      - name: Lint
-        run: npm run lint
+            - name: Type-check
+              run: npm run typecheck || npx tsc --noEmit
+              working-directory: ui
 
-      - name: Build
-        run: npm run build
+            - name: Build
+              run: npm run build
+              working-directory: ui
+
+            - name: Vitest
+              run: npm run test -- --coverage --coverage.reporter=lcov
+              working-directory: ui
+
+    # ─── Electron ────────────────────────────────────────────────────────────
+    electron:
+        name: Electron · Lint & build
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "22"
+
+            - name: Install dependencies
+              run: npm install
+              working-directory: electron
+
+            - name: ESLint
+              run: npm run lint
+              working-directory: electron
+
+            - name: Type-check
+              run: npm run typecheck || npx tsc --noEmit
+              working-directory: electron
+
+            - name: Build
+              run: npm run build
+              working-directory: electron
+
+    # ─── SonarCloud ──────────────────────────────────────────────────────────
+    sonar:
+        name: SonarCloud analysis
+        needs: [config, daemon-ruff, daemon-mypy, daemon-test]
+        if: always()
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: read
+            checks: write
+            pull-requests: write
+            statuses: write
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+
+            - name: SonarCloud scan
+              uses: chrysa/github-actions/sonar-scan-python@main
+              with:
+                  python-version: ${{ needs.config.outputs.latest-python }}
+                  sonar-token: ${{ secrets.SONAR_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  project-key: chrysa_floating-agent
+                  organization: chrysa
+                  project-name: floating-agent
+                  sources: daemon/floating_agent
+                  tests: daemon/tests

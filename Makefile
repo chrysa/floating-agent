@@ -71,12 +71,17 @@ test-ui: ## Run UI tests (Vitest)
 	$(NPM) run test --prefix $(UI_DIR)
 
 .PHONY: test-daemon
-test-daemon: ## Run daemon tests (pytest)
-	cd $(DAEMON_DIR) && pytest
+test-daemon: ## Run daemon tests in Docker
+	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
+	docker run --rm floating-agent-test
+
+.PHONY: docker-test
+docker-test: test-daemon ## Alias for CI-compatible docker-based test
 
 .PHONY: test-cov
-test-cov: ## Run daemon tests with coverage
-	cd $(DAEMON_DIR) && pytest --cov=floating_agent --cov-report=term-missing --cov-report=xml
+test-cov: ## Run daemon tests with coverage in Docker
+	docker build -f $(DAEMON_DIR)/Dockerfile.test -t floating-agent-test $(DAEMON_DIR) && \
+	docker run --rm floating-agent-test
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint & Format
@@ -165,3 +170,11 @@ clean: ## Remove build artifacts and caches
 	rm -rf $(ELECTRON_DIR)/dist/ $(ELECTRON_DIR)/out/
 	rm -rf $(UI_DIR)/dist/
 	@echo "Clean complete"
+
+# ── Quality Gates ──────────────────────────────────────────────────────────────
+
+quality-gate-baseline: ## Record baseline metrics for regression detection
+	@python3 scripts/quality_gate.py baseline
+
+quality-gate-verify: ## Verify no regression since baseline
+	@python3 scripts/quality_gate.py verify

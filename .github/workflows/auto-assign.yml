@@ -1,0 +1,10 @@
+---
+name: Auto Assign Reviewers
+
+on:
+    pull_request:
+        types: [opened, ready_for_review, reopened]
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/auto-assign.yml@main

@@ -1,0 +1,14 @@
+---
+name: Check Conflicts
+
+on:
+    pull_request:
+        types: [opened, reopened, synchronize]
+
+concurrency:
+    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/detect-conflicts.yml@main
