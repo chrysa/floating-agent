@@ -58,28 +58,21 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@main
+              uses: chrysa/github-actions/python-setup@v1
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - name: Install project dependencies
-              run: pip install -e '.[dev]'
-
-            - name: Ruff — lint check
-              run: |
-                  mkdir -p reports
-                  ruff check --config=pyproject.toml floating_agent tests --output-format=json > reports/ruff.json || true
-
-            - name: Ruff — format check
-              run: ruff format --check --config=pyproject.toml floating_agent tests
-
-            - name: Upload ruff report
-              if: always()
-              uses: actions/upload-artifact@v7
+            - uses: chrysa/github-actions/install-project@v1
               with:
-                  name: ruff-report
-                  path: daemon/reports/ruff.json
-                  if-no-files-found: ignore
+                  extras: dev
+
+            - uses: chrysa/github-actions/ruff-check@v1
+              with:
+                  working-directory: daemon
+                  sources: floating_agent tests
+                  config: pyproject.toml
+                  python-version: ${{ matrix.python-version }}
+                  latest-python: ${{ needs.config.outputs.latest-python }}
 
     daemon-mypy:
         name: Daemon · Mypy (${{ matrix.python-version }})
@@ -100,12 +93,13 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@main
+              uses: chrysa/github-actions/python-setup@v1
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - name: Install project dependencies
-              run: pip install -e '.[dev]'
+            - uses: chrysa/github-actions/install-project@v1
+              with:
+                  extras: dev
 
             - name: Mypy checks
               run: |
@@ -138,12 +132,13 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@main
+              uses: chrysa/github-actions/python-setup@v1
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - name: Install project dependencies
-              run: pip install -e '.[dev]'
+            - uses: chrysa/github-actions/install-project@v1
+              with:
+                  extras: dev
 
             - name: Run tests
               run: |
