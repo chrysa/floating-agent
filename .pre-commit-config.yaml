@@ -62,6 +62,8 @@ repos:
       - id: no-bare-except
 
   # ─── Commit message ────────────────────────────────────────────────────────
+      - id: regression-gate
+        stages: [pre-push]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
