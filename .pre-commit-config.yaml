@@ -29,7 +29,7 @@ repos:
 
   # ─── Python (daemon) ───────────────────────────────────────────────────────
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.15.14
     hooks:
       - id: ruff
         args: [--fix]
@@ -54,7 +54,7 @@ repos:
 
   # ─── Python quality ────────────────────────────────────────────────────────
   - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v0.1.1-75
+    rev: v0.1.1-76
     hooks:
       - id: debugger-detection
       - id: python-print-detection
@@ -62,6 +62,8 @@ repos:
       - id: no-bare-except
 
   # ─── Commit message ────────────────────────────────────────────────────────
+      - id: regression-gate
+        stages: [pre-push]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
