@@ -1,12 +1,14 @@
 # CLAUDE.md — floating-agent
 
-> **Claude Code**: also read `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md` for code specifications.
-
 ## Vision
 
 🪄 Floating Multi-OS AI Assistant — an always-on-top overlay running on Windows and Linux
 that provides quick access to AI, system monitoring, Notion project status, calendar,
 messaging, and productivity tools without leaving your current context.
+
+## Language Rules
+
+- Language: English — all code, comments, documentation, instructions, and configuration files must be in English.
 
 ## Architecture
 
@@ -78,34 +80,11 @@ floating-agent/
 
 Each integration lives in `daemon/floating_agent/plugins/`:
 
-### Implemented
-
-- `system.py` — psutil: CPU, RAM, disk
-
-### V0.2 — Extended monitoring (Atera-inspired)
-
-- `network.py` — psutil: bandwidth ↑↓ in MB/s, active connections count
-- `processes.py` — psutil: top N processes by CPU/RAM, expose kill endpoint
-- `alert_engine.py` — threshold config (pydantic-settings), `/alerts` endpoint returning metrics in breach
-
-### V0.3 — Dev environment awareness
-
-- `docker.py` — Docker socket: container list (running/stopped/exited), CPU/RAM per container
-- `metrics_history.py` — in-memory `deque(maxlen=60)` per plugin, `/*/history` endpoints for sparklines
+- `system.py` — psutil: CPU, RAM, disk, process list
 - `notion.py` — Notion MCP or REST API client
-
-### V0.4 — Integrations
-
 - `calendar.py` — Google Calendar (OAuth2)
 - `messaging.py` — Gmail summary + Slack status
 - `ai_router.py` — HTTP client → ai-aggregator
-
-### V1.0 — AI-first automation
-
-- `automation.py` — rule engine: YAML-configured condition → action (self-healing)
-  Example: `if cpu_percent > 90 for 120s → kill top process + notify`
-  Example: `if docker container X exited → restart it`
-- `ai_scripts.py` — natural language → shell command generation via ai-aggregator (requires user confirmation before execution)
 
 ## Platform Notes
 
@@ -153,18 +132,4 @@ Daemon listens on `127.0.0.1:34001` (localhost only, not exposed).
 - **ai-aggregator**: AI routing — configure URL in `daemon/.env`
 - **Notion**: read project status from Centre de suivi
 - **LifeOS**: future — assistant / Jarvis layer
-- **diy-stream-deck**: future — trigger floating-agent actions from hardware keys
-
-## Competitive Positioning
-
-Floating-agent occupies the gap between personal productivity tools and IT management platforms.
-Atera (RMM/PSA for MSPs) demonstrates the value of:
-
-- per-resource monitoring with configurable thresholds → implemented via `alert_engine.py`
-- top-process visibility + kill action → `processes.py`
-- self-healing automations (condition → action) → `automation.py` (V1.0)
-- AI script generation from natural language → `ai_scripts.py` (V1.0)
-
-Key differentiator vs Atera: floating-agent targets **individual developers** on their own machine,
-not IT teams managing hundreds of endpoints. The self-healing scope is a single dev workstation,
-not a fleet.
+- **os-autonome**: future — OS state and remediation

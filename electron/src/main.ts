@@ -19,7 +19,7 @@ const UI_DEV_URL = "http://localhost:5173";
 const UI_PROD_PATH = path.join(__dirname, "../../ui/dist/index.html");
 
 let mainWindow: BrowserWindow | null = null;
-let tray: Tray | null = null; // eslint-disable-line @typescript-eslint/no-unused-vars
+let _tray: Tray | null = null;
 let daemonProcess: ChildProcess | null = null;
 
 // ─── Daemon management ───────────────────────────────────────────────────────
@@ -83,10 +83,10 @@ function createOverlayWindow(): BrowserWindow {
   });
 
   if (IS_DEV) {
-    win.loadURL(UI_DEV_URL).catch(() => {});
+    void win.loadURL(UI_DEV_URL);
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    win.loadFile(UI_PROD_PATH).catch(() => {});
+    void win.loadFile(UI_PROD_PATH);
   }
 
   return win;
@@ -126,7 +126,7 @@ function registerIpcHandlers(): void {
 app.on("ready", () => {
   startDaemon();
   mainWindow = createOverlayWindow();
-  tray = createTray(mainWindow);
+  _tray = createTray(mainWindow);
   registerIpcHandlers();
 });
 
