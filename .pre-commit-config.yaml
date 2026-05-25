@@ -53,6 +53,15 @@ repos:
         files: ^daemon/
 
   # ─── Python quality ────────────────────────────────────────────────────────
+      - id: adr-gate
+      - id: dockerfile-no-latest
+      - id: console-log-detection
+      - id: console-debug-detection
+      - id: react-console-error-detection
+      - id: no-console-warn
+      - id: import-no-relative-parent
+      - id: regression-gate
+        stages: [pre-push]
   - repo: https://github.com/chrysa/pre-commit-tools
     rev: v0.1.1-76
     hooks:
