@@ -4,13 +4,13 @@ default_language_version:
 fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
-  # ─── Security ──────────────────────────────────────────────────────────────
+  # ─── Security ───────────────────────────────────────────────────────────────────
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:
       - id: gitleaks
 
-  # ─── General ───────────────────────────────────────────────────────────────
+  # ─── General ───────────────────────────────────────────────────────────────────────
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -27,7 +27,7 @@ repos:
       - id: no-commit-to-branch
         args: ["--branch", "main"]
 
-  # ─── Python (daemon) ───────────────────────────────────────────────────────
+  # ─── Python (daemon) ───────────────────────────────────────────────────────────────
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.14
     hooks:
@@ -37,7 +37,7 @@ repos:
       - id: ruff-format
         files: ^daemon/
 
-  # ─── TypeScript / JavaScript ───────────────────────────────────────────────
+  # ─── TypeScript / JavaScript ───────────────────────────────────────────────────
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8
     hooks:
@@ -45,34 +45,32 @@ repos:
         files: \.(ts|tsx|js|jsx|json|css|scss|md)$
         exclude: ^(electron/dist|ui/dist|node_modules)/
 
-  # ─── Python type check ─────────────────────────────────────────────────────
+  # ─── Python type check ────────────────────────────────────────────────────────────
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.1.0
     hooks:
       - id: mypy
         files: ^daemon/
 
-  # ─── Python quality ────────────────────────────────────────────────────────
-      - id: adr-gate
-      - id: dockerfile-no-latest
-      - id: console-log-detection
-      - id: console-debug-detection
-      - id: react-console-error-detection
-      - id: no-console-warn
-      - id: import-no-relative-parent
-      - id: regression-gate
-        stages: [pre-push]
+  # ─── Python quality ──────────────────────────────────────────────────────────────────
   - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v0.1.1-76
+    rev: v0.1.1-92
     hooks:
+      - id: adr-gate
+      - id: console-debug-detection
+      - id: console-log-detection
       - id: debugger-detection
-      - id: python-print-detection
-      - id: python-logger-detection
+      - id: dockerfile-no-latest
+      - id: import-no-relative-parent
       - id: no-bare-except
-
-  # ─── Commit message ────────────────────────────────────────────────────────
+      - id: no-console-warn
+      - id: python-logger-detection
+      - id: python-print-detection
+      - id: react-console-error-detection
       - id: regression-gate
         stages: [pre-push]
+
+  # ─── Commit message ────────────────────────────────────────────────────────────────
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
