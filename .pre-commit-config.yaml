@@ -63,7 +63,7 @@ repos:
       - id: regression-gate
         stages: [pre-push]
   - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v0.1.1-76
+    rev: v0.1.1-92
     hooks:
       - id: debugger-detection
       - id: python-print-detection
