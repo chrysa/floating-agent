@@ -58,15 +58,15 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@v1
+              uses: chrysa/github-actions/python-setup@v1.0.12
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - uses: chrysa/github-actions/install-project@v1
+            - uses: chrysa/github-actions/install-project@v1.0.12
               with:
                   extras: dev
 
-            - uses: chrysa/github-actions/ruff-check@v1
+            - uses: chrysa/github-actions/ruff-check@v1.0.12
               with:
                   working-directory: daemon
                   sources: floating_agent tests
@@ -93,11 +93,11 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@v1
+              uses: chrysa/github-actions/python-setup@v1.0.12
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - uses: chrysa/github-actions/install-project@v1
+            - uses: chrysa/github-actions/install-project@v1.0.12
               with:
                   extras: dev
 
@@ -132,11 +132,11 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Setup Python
-              uses: chrysa/github-actions/python-setup@v1
+              uses: chrysa/github-actions/python-setup@v1.0.12
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - uses: chrysa/github-actions/install-project@v1
+            - uses: chrysa/github-actions/install-project@v1.0.12
               with:
                   extras: dev
 
