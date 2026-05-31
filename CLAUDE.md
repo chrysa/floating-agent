@@ -133,3 +133,9 @@ Daemon listens on `127.0.0.1:34001` (localhost only, not exposed).
 - **Notion**: read project status from Centre de suivi
 - **LifeOS**: future — assistant / Jarvis layer
 - **os-autonome**: future — OS state and remediation
+
+## Skills
+
+Shared skills from `shared-standards/.claude/skills/`:
+
+- `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)
