@@ -168,3 +168,9 @@ Atera (RMM/PSA for MSPs) demonstrates the value of:
 Key differentiator vs Atera: floating-agent targets **individual developers** on their own machine,
 not IT teams managing hundreds of endpoints. The self-healing scope is a single dev workstation,
 not a fleet.
+
+## Skills
+
+Shared skills from `shared-standards/.claude/skills/`:
+
+- `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)
