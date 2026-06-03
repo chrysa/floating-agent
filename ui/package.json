@@ -15,14 +15,14 @@
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
     "lucide-react": "^0.400.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.0.0",
     "@eslint/js": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
