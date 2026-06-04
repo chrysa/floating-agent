@@ -2,14 +2,22 @@
 FROM python:3.14-slim AS deps
 
 WORKDIR /app
+
+# Qt runtime libraries for PySide6 (headless / offscreen)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libegl1 libgl1 libxkbcommon0 libdbus-1-3 libglib2.0-0 libfontconfig1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY pyproject.toml README.md ./
 COPY floating_agent/ ./floating_agent/
 RUN pip install --no-cache-dir -e ".[dev]"
 
 FROM deps AS test
 
-# Copy tests after deps so dependency layer stays cached
+# Copy tests after deps so the dependency layer stays cached
 COPY tests/ ./tests/
+
+ENV QT_QPA_PLATFORM=offscreen
 
 # Run as non-root user
 RUN useradd --create-home appuser && chown -R appuser /app
