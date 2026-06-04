@@ -2,6 +2,7 @@
 applyTo: "**/*.{ts,tsx,js,jsx}"
 description: "Frontend guidelines"
 ---
+
 # Frontend Guidelines
 
 ## Loading States (NON-NEGOTIABLE)
