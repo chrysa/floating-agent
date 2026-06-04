@@ -53,7 +53,7 @@ repos:
         files: ^floating_agent/
         additional_dependencies:
           - pydantic>=2.7
-          - pydantic-settings>=2.3
+          - pydantic-settings>=2.14.1
           - fastapi>=0.136.3
           - types-psutil
 
