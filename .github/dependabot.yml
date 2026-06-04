@@ -58,48 +58,9 @@ updates:
           interval: cron
           cronjob: "0 4 * * 5"
 
-    # Node / npm
-    - package-ecosystem: npm
-      directories:
-          - "/ui"
-          - "/electron"
-      assignees:
-          - chrysa
-      reviewers:
-          - chrysa
-      open-pull-requests-limit: 10
-      commit-message:
-          prefix: "[npm] "
-      labels:
-          - dependencies
-          - JavaScript
-      schedule:
-          interval: cron
-          cronjob: "0 4 * * 5"
-      groups:
-          react-ecosystem:
-              patterns:
-                  - react
-                  - react-*
-                  - "@types/react*"
-          testing:
-              patterns:
-                  - vitest
-                  - "@testing-library/*"
-                  - jest*
-          build-tools:
-              patterns:
-                  - vite
-                  - "@vitejs/*"
-                  - typescript
-                  - "@typescript-eslint/*"
-                  - eslint*
-      cooldown:
-          default-days: 7
-
     # Python · pip
     - package-ecosystem: pip
-      directory: /daemon
+      directory: /
       assignees:
           - chrysa
       reviewers:

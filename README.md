@@ -6,37 +6,34 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An open-source floating multi-OS AI assistant that runs on **Windows** and **Linux**.
-Always-on-top overlay providing quick access to AI, system monitoring, Notion project status, calendar, messaging, and productivity tools — without leaving your current context.
+A proactive **whole-life agent** behind an always-on-top overlay: it reads/writes your Notion,
+sends you reminders, and acts across system monitoring, calendar, and messaging — without
+leaving your current context.
 
 ---
 
 ## Architecture
 
+Single Python process — a native **PySide6 (Qt)** overlay over a tool-calling agent core.
+Electron and the React UI were removed (see [DECISIONS.md](DECISIONS.md) D-0002).
+
 ```
-┌─────────────────────────────────────────────┐
-│  Electron Shell (main process)              │
-│  ┌──────────────────────────────────────┐   │
-│  │  React UI (renderer)                 │   │
-│  │  ┌────────┐ ┌────────┐ ┌──────────┐  │   │
-│  │  │ System │ │ Notion │ │ Calendar │  │   │
-│  │  └────────┘ └────────┘ └──────────┘  │   │
-│  │  ┌────────┐ ┌──────────────────────┐  │   │
-│  │  │  Chat  │ │     Messaging        │  │   │
-│  │  └────────┘ └──────────────────────┘  │   │
-│  └──────────────────────────────────────┘   │
-└────────────────────┬────────────────────────┘
-                     │ IPC (contextBridge)
-┌────────────────────▼────────────────────────┐
-│  Python Daemon  127.0.0.1:34001             │
-│  ┌──────┐ ┌────────┐ ┌──────────┐ ┌──────┐  │
-│  │psutil│ │Notion  │ │Calendar  │ │ AI   │  │
-│  │plugin│ │plugin  │ │plugin    │ │router│  │
-│  └──────┘ └────────┘ └──────────┘ └──┬───┘  │
-└─────────────────────────────────────-│------┘
-                                        │ HTTP
-                             ┌──────────▼──────┐
-                             │ ai-aggregator   │
-                             └─────────────────┘
+┌──────────────────────────────────────────────────┐
+│  Single Python process                             │
+│                                                    │
+│   PySide6 overlay  ── surface: chat + reminders    │
+│        ▲ notify / surface          │ intent        │
+│        │                           ▼               │
+│   Proactive engine  ──wake──►   Agent (tool-loop)  │
+│   (scheduler + notifier)            │              │
+│                          ┌──────────┴───────────┐  │
+│                       Tools: Notion(R/W) · System │
+│                       · Calendar · Messaging · AI │
+│                                     │ HTTP         │
+│                          ┌──────────▼──────┐       │
+│                          │  ai-aggregator  │       │
+│                          └─────────────────┘       │
+└──────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
@@ -52,12 +49,11 @@ make dev
 
 ```bash
 make help       # Show all targets
-make install    # Install all dependencies (npm + pip)
-make dev        # Start in development mode (hot reload)
-make test       # Run all tests
-make lint       # Lint all code
-make build      # Build for production
-make package    # Package for current OS
+make install    # Install python deps + pre-commit hooks
+make dev        # Launch the PySide6 overlay (python -m floating_agent)
+make test       # Run tests in Docker
+make lint       # Ruff
+make build      # Package via PyInstaller (PR8)
 ```
 
 ## Platform Support
@@ -96,24 +92,23 @@ make package    # Package for current OS
 
 ## Stack
 
-| Layer       | Technology                       |
-| ----------- | -------------------------------- |
-| Shell       | Electron 32+                     |
-| UI          | React 19 + Vite 7 + TypeScript 5 |
-| Daemon      | Python 3.12 + FastAPI            |
-| System info | psutil                           |
-| Secrets     | OS keychain (keyring)            |
-| AI          | chrysa/ai-aggregator             |
-| Tests       | Vitest + pytest                  |
-| Packaging   | electron-builder                 |
+| Layer       | Technology                    |
+| ----------- | ----------------------------- |
+| Shell / UI  | PySide6 (Qt) — native overlay |
+| Core        | Python 3.14 (agent + plugins) |
+| HTTP (opt.) | FastAPI (`--serve`)           |
+| System info | psutil                        |
+| Secrets     | OS keychain (keyring)         |
+| AI          | chrysa/ai-aggregator          |
+| Tests       | pytest + pytest-qt            |
+| Packaging   | PyInstaller                   |
 
 ## Security
 
-- `nodeIntegration: false` — renderer has no direct Node access
-- `contextIsolation: true` — secure IPC bridge via `contextBridge`
-- No plaintext secrets on disk — OS keychain mandatory
-- All OAuth flows handled in daemon process
+- No plaintext secrets on disk — OS keychain (`keyring`) mandatory
+- OAuth flows handled in-process; tokens never logged
 - All AI calls logged (provider + timestamp, no content)
+- Agent writes (Notion, etc.) require confirmation or dry-run for sensitive actions
 
 ## Related Projects
 
