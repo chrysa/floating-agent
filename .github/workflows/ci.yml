@@ -98,7 +98,7 @@ jobs:
             - name: Mypy checks
               run: |
                   mkdir -p reports
-                  mypy --config-file=pyproject.toml floating_agent 2>&1 | tee reports/mypy.txt; exit ${PIPESTATUS[0]}
+                  mypy --config-file=pyproject.toml floating_agent 2>&1 | tee reports/mypy.txt; exit "${PIPESTATUS[0]}"
 
             - name: Upload mypy report
               if: always()
