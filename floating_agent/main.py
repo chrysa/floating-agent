@@ -1,6 +1,8 @@
-"""Floating Agent daemon — FastAPI sidecar for the Electron shell.
+"""Floating Agent — optional FastAPI HTTP layer (enabled via `--serve`).
 
-Listens on 127.0.0.1:34001 (localhost only, never exposed externally).
+The primary shell is the native PySide6 overlay, which calls the plugins/agent core
+directly in-process (no HTTP). This FastAPI app only exists to optionally expose the
+agent to other chrysa tools. Listens on 127.0.0.1:34001 (localhost only, never exposed).
 """
 
 from fastapi import FastAPI
@@ -19,10 +21,10 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# Allow only Electron renderer (file:// or localhost dev server)
+# Localhost-only origins (the optional HTTP layer is never exposed externally)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "file://"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "floating-agent-daemon"
 version = "0.1.0"
-description = "Python daemon sidecar for the Floating Multi-OS AI Assistant"
+description = "Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -34,7 +34,8 @@ include = ["floating_agent*"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py314"
+# Pinned to py313: `ruff format` on py314 strips except-clause parens (known bug). See DECISIONS D-0002.
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [
@@ -58,6 +59,7 @@ ignore = ["S101"]
 python_version = "3.14"
 strict = true
 ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
