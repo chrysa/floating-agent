@@ -2,6 +2,7 @@
 applyTo: "**/*.py"
 description: "Python coding guidelines"
 ---
+
 # Python Guidelines
 
 ## Structure Rules (from Notion Engineering Standards 2026-05-21)
