@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
+from floating_agent.agent import build_default_agent
+from floating_agent.overlay.widgets.chat_widget import ChatWidget
 from floating_agent.overlay.widgets.system_widget import SystemWidget
 
 if TYPE_CHECKING:
@@ -21,10 +23,12 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.setFixedSize(280, 160)
+        self.setFixedSize(320, 420)
 
+        agent = build_default_agent()
         layout = QVBoxLayout(self)
         layout.addWidget(SystemWidget())
+        layout.addWidget(ChatWidget(responder=agent.run))
 
         self._drag_offset: QPoint | None = None
 
