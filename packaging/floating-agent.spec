@@ -4,7 +4,7 @@
 from PyInstaller.utils.hooks import collect_submodules
 
 a = Analysis(
-    ["floating_agent/__main__.py"],
+    ["../floating_agent/__main__.py"],
     pathex=[],
     binaries=[],
     datas=[],
