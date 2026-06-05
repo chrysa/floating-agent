@@ -1,0 +1,51 @@
+---
+name: Package
+
+on:
+    pull_request:
+        paths:
+            - "packaging/**"
+            - "pyproject.toml"
+            - "floating_agent/**"
+            - ".github/workflows/package.yml"
+    workflow_dispatch:
+    release:
+        types: [published]
+
+permissions: {}
+
+jobs:
+    build:
+        name: Build ${{ matrix.artifact }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 30
+        permissions:
+            contents: read
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: ubuntu-latest
+                      artifact: floating-agent-linux
+                    - os: windows-latest
+                      artifact: floating-agent-windows
+        steps:
+            - uses: actions/checkout@v6.0.2
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+
+            - name: Install project
+              run: pip install -e ".[dev]"
+
+            - name: Build standalone binary
+              run: pyinstaller --noconfirm packaging/floating-agent.spec
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ${{ matrix.artifact }}
+                  path: dist/*
+                  if-no-files-found: error
