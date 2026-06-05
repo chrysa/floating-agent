@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from floating_agent.plugins.notion import NotionPage
 
 from floating_agent.plugins.system import SystemPlugin
 
@@ -19,6 +21,7 @@ class Tool:
     description: str
     parameters: dict[str, Any]
     handler: Callable[[dict[str, Any]], str]
+    requires_confirmation: bool = False
 
     def run(self, arguments: dict[str, Any]) -> str:
         return self.handler(arguments)
@@ -65,3 +68,57 @@ def build_system_tool(plugin: SystemPlugin | None = None) -> Tool:
         parameters={"type": "object", "properties": {}},
         handler=handler,
     )
+
+
+class NotionLike(Protocol):
+    """Subset of NotionClient the agent tools need (kept fake-able in tests)."""
+
+    def search(self, query: str) -> list[NotionPage]: ...
+
+    def create_task(self, database_id: str, title: str) -> NotionPage: ...
+
+
+def build_notion_tools(client: NotionLike, database_id: str | None = None) -> list[Tool]:
+    """Read tool (search) and, if a database is configured, a write tool (create task)."""
+
+    def search_handler(arguments: dict[str, Any]) -> str:
+        query = str(arguments.get("query", ""))
+        results = client.search(query)
+        if not results:
+            return "No matching Notion pages."
+        return "\n".join(f"- {p.title} ({p.url})" for p in results)
+
+    tools = [
+        Tool(
+            name="notion_search",
+            description="Search the user's Notion workspace for pages matching a query.",
+            parameters={
+                "type": "object",
+                "properties": {"query": {"type": "string"}},
+                "required": ["query"],
+            },
+            handler=search_handler,
+        )
+    ]
+
+    if database_id is not None:
+
+        def create_handler(arguments: dict[str, Any]) -> str:
+            page = client.create_task(database_id, str(arguments["title"]))
+            return f"Created task '{page.title}' ({page.url})"
+
+        tools.append(
+            Tool(
+                name="notion_create_task",
+                description="Create a new task in the user's Notion tasks database.",
+                parameters={
+                    "type": "object",
+                    "properties": {"title": {"type": "string"}},
+                    "required": ["title"],
+                },
+                handler=create_handler,
+                requires_confirmation=True,
+            )
+        )
+
+    return tools

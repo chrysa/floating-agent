@@ -6,13 +6,26 @@ import os
 
 from floating_agent.agent.client import LLMClient, StubClient
 from floating_agent.agent.loop import Agent
-from floating_agent.agent.tools import ToolRegistry, build_system_tool
+from floating_agent.agent.tools import ToolRegistry, build_notion_tools, build_system_tool
 
 
 def build_default_registry() -> ToolRegistry:
-    """Registry with the built-in tools available out of the box."""
+    """Registry with the built-in tools available out of the box.
+
+    Notion tools are added when NOTION_API_KEY is set; the write tool only when
+    NOTION_TASKS_DB_ID is also configured.
+    """
     registry = ToolRegistry()
     registry.register(build_system_tool())
+
+    notion_key = os.environ.get("NOTION_API_KEY")
+    if notion_key:  # pragma: no cover - wiring requires real credentials
+        from floating_agent.plugins.notion import NotionClient
+
+        client = NotionClient(api_key=notion_key)
+        for tool in build_notion_tools(client, os.environ.get("NOTION_TASKS_DB_ID")):
+            registry.register(tool)
+
     return registry
 
 
