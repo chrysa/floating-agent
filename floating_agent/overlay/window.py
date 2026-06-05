@@ -15,20 +15,22 @@ if TYPE_CHECKING:
     from PySide6.QtCore import QPoint
     from PySide6.QtGui import QMouseEvent
 
+    from floating_agent.agent.loop import Agent
+
 
 class OverlayWindow(QWidget):
     """The floating overlay. Hosts the module widgets; draggable by its body."""
 
-    def __init__(self) -> None:
+    def __init__(self, agent: Agent | None = None) -> None:
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setFixedSize(320, 420)
 
-        agent = build_default_agent()
+        resolved_agent = agent if agent is not None else build_default_agent()
         layout = QVBoxLayout(self)
         layout.addWidget(SystemWidget())
-        layout.addWidget(ChatWidget(responder=agent.run))
+        layout.addWidget(ChatWidget(responder=resolved_agent.run))
 
         self._drag_offset: QPoint | None = None
 

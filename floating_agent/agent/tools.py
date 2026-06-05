@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Protocol
+from uuid import uuid4
+
+from floating_agent.proactive.reminders import Reminder
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from floating_agent.plugins.notion import NotionPage
+    from floating_agent.proactive.reminders import ReminderStore
 
 from floating_agent.plugins.system import SystemPlugin
 
@@ -122,3 +127,28 @@ def build_notion_tools(client: NotionLike, database_id: str | None = None) -> li
         )
 
     return tools
+
+
+def build_reminder_tool(store: ReminderStore, clock: Callable[[], datetime] = datetime.now) -> Tool:
+    """Tool letting the agent schedule a reminder N minutes from now."""
+
+    def handler(arguments: dict[str, Any]) -> str:
+        message = str(arguments["message"])
+        minutes = float(arguments.get("in_minutes", 0))
+        due_at = clock() + timedelta(minutes=minutes)
+        store.add(Reminder(id=uuid4().hex, message=message, due_at=due_at))
+        return f"Reminder set for {due_at:%Y-%m-%d %H:%M}: {message}"
+
+    return Tool(
+        name="create_reminder",
+        description="Schedule a reminder to fire after a number of minutes.",
+        parameters={
+            "type": "object",
+            "properties": {
+                "message": {"type": "string"},
+                "in_minutes": {"type": "number"},
+            },
+            "required": ["message", "in_minutes"],
+        },
+        handler=handler,
+    )
