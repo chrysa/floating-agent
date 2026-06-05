@@ -8,6 +8,8 @@ from floating_agent.agent.client import LLMClient, StubClient
 from floating_agent.agent.loop import Agent
 from floating_agent.agent.tools import (
     ToolRegistry,
+    build_calendar_tool,
+    build_messaging_tool,
     build_notion_tools,
     build_reminder_tool,
     build_system_tool,
@@ -34,6 +36,18 @@ def build_default_registry(reminder_store: ReminderStore | None = None) -> ToolR
         client = NotionClient(api_key=notion_key)
         for tool in build_notion_tools(client, os.environ.get("NOTION_TASKS_DB_ID")):
             registry.register(tool)
+
+    calendar_token = os.environ.get("CALENDAR_ACCESS_TOKEN")
+    if calendar_token:  # pragma: no cover - wiring requires real credentials
+        from floating_agent.plugins.calendar import CalendarClient
+
+        registry.register(build_calendar_tool(CalendarClient(access_token=calendar_token)))
+
+    gmail_token = os.environ.get("GMAIL_ACCESS_TOKEN")
+    if gmail_token:  # pragma: no cover - wiring requires real credentials
+        from floating_agent.plugins.messaging import GmailClient
+
+        registry.register(build_messaging_tool(GmailClient(access_token=gmail_token)))
 
     return registry
 
