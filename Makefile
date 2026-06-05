@@ -69,8 +69,8 @@ typecheck: ## Type-check with mypy
 # ──────────────────────────────────────────────────────────────────────────────
 
 .PHONY: build
-build: ## Package distributable for current OS (PyInstaller)
-	@echo "PyInstaller packaging lands in PR8 (.exe + AppImage)"
+build: ## Package a standalone binary for the current OS (PyInstaller)
+	pyinstaller --noconfirm packaging/floating-agent.spec
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Quality

@@ -53,7 +53,7 @@ make install    # Install python deps + pre-commit hooks
 make dev        # Launch the PySide6 overlay (python -m floating_agent)
 make test       # Run tests in Docker
 make lint       # Ruff
-make build      # Package via PyInstaller (PR8)
+make build      # Package a standalone binary (PyInstaller)
 ```
 
 ## Platform Support

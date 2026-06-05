@@ -43,3 +43,17 @@ sends reminders, acts), which a thin AI-access overlay does not capture.
 **Consequences.** The 2026-05-12 Notion arbitrage (floating-agent = overlay only; agents live in
 LifeOS) is superseded on the agent-scope point — the floating-agent ↔ LifeOS boundary must be
 re-arbitrated. Toolkit choice: PySide6 (LGPL) over PyQt6 (GPL) for licensing.
+
+---
+
+## D-0003 — Packaging via PyInstaller (onefile, per-OS in CI)
+
+**Date**: 2026-06-05
+**Status**: accepted
+
+Standalone binaries are built with **PyInstaller** (onefile) from
+`packaging/floating-agent.spec`; PySide6 is bundled via PyInstaller's built-in Qt
+hooks. Per-OS binaries (Linux + Windows) are produced by the `package.yml` matrix
+workflow on pull request, manual dispatch, and release — GitHub runners are the
+build/verification environment for cross-OS artifacts. Wayland-native packaging and
+a Windows NSIS installer remain follow-ups.
