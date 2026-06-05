@@ -12,6 +12,7 @@ from floating_agent.proactive.reminders import Reminder
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from floating_agent.plugins.calendar import CalendarEvent
     from floating_agent.plugins.notion import NotionPage
     from floating_agent.proactive.reminders import ReminderStore
 
@@ -150,5 +151,44 @@ def build_reminder_tool(store: ReminderStore, clock: Callable[[], datetime] = da
             },
             "required": ["message", "in_minutes"],
         },
+        handler=handler,
+    )
+
+
+class CalendarLike(Protocol):
+    def upcoming(self, max_results: int = 5) -> list[CalendarEvent]: ...
+
+
+class GmailLike(Protocol):
+    def unread_count(self) -> int: ...
+
+
+def build_calendar_tool(client: CalendarLike) -> Tool:
+    """Read tool: list the user's upcoming calendar events."""
+
+    def handler(_arguments: dict[str, Any]) -> str:
+        events = client.upcoming()
+        if not events:
+            return "No upcoming events."
+        return "\n".join(f"- {e.start}: {e.summary}" for e in events)
+
+    return Tool(
+        name="calendar_upcoming",
+        description="List the user's upcoming calendar events.",
+        parameters={"type": "object", "properties": {}},
+        handler=handler,
+    )
+
+
+def build_messaging_tool(client: GmailLike) -> Tool:
+    """Read tool: summarise the user's unread Gmail count."""
+
+    def handler(_arguments: dict[str, Any]) -> str:
+        return f"You have {client.unread_count()} unread email(s)."
+
+    return Tool(
+        name="gmail_summary",
+        description="Summarise the user's unread email count.",
+        parameters={"type": "object", "properties": {}},
         handler=handler,
     )
