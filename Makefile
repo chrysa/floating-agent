@@ -1,3 +1,4 @@
+# makefile-tier: lib
 # floating-agent — Makefile
 # Architecture: native PySide6 overlay + Python agent core (single process)
 # Extends conventions from Forge-Stack-Workshop/base-makefile
@@ -46,6 +47,10 @@ test: ## Run tests in Docker
 
 .PHONY: docker-test
 docker-test: test ## Alias for CI-compatible docker-based test
+
+.PHONY: test-cov
+test-cov: ## Run tests with coverage report
+	pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint, Format, Typecheck
