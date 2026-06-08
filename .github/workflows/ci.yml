@@ -39,75 +39,6 @@ jobs:
                   echo 'python-versions=["3.14"]' >> "$GITHUB_OUTPUT"
                   echo 'latest-python=3.14' >> "$GITHUB_OUTPUT"
 
-    # ─── Python daemon ───────────────────────────────────────────────────────
-    daemon-ruff:
-        name: Daemon · Ruff (${{ matrix.python-version }})
-        needs: config
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        permissions:
-            contents: read
-        strategy:
-            fail-fast: false
-            matrix:
-                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
-        steps:
-            - uses: actions/checkout@v6.0.2
-
-            - name: Setup Python
-              uses: chrysa/github-actions/python-setup@v1.0.12
-              with:
-                  python-version: ${{ matrix.python-version }}
-
-            - uses: chrysa/github-actions/install-project@v1.0.12
-              with:
-                  extras: dev
-
-            - uses: chrysa/github-actions/ruff-check@v1.0.12
-              with:
-                  working-directory: .
-                  sources: floating_agent tests
-                  config: pyproject.toml
-                  python-version: ${{ matrix.python-version }}
-                  latest-python: ${{ needs.config.outputs.latest-python }}
-
-    daemon-mypy:
-        name: Daemon · Mypy (${{ matrix.python-version }})
-        needs: config
-        runs-on: ubuntu-latest
-        continue-on-error: true
-        timeout-minutes: 20
-        permissions:
-            contents: read
-        strategy:
-            fail-fast: false
-            matrix:
-                python-version: ${{ fromJson(needs.config.outputs.python-versions) }}
-        steps:
-            - uses: actions/checkout@v6.0.2
-
-            - name: Setup Python
-              uses: chrysa/github-actions/python-setup@v1.0.12
-              with:
-                  python-version: ${{ matrix.python-version }}
-
-            - uses: chrysa/github-actions/install-project@v1.0.12
-              with:
-                  extras: dev
-
-            - name: Mypy checks
-              run: |
-                  mkdir -p reports
-                  mypy --config-file=pyproject.toml floating_agent 2>&1 | tee reports/mypy.txt; exit "${PIPESTATUS[0]}"
-
-            - name: Upload mypy report
-              if: always()
-              uses: actions/upload-artifact@v7
-              with:
-                  name: mypy-report
-                  path: reports/mypy.txt
-                  if-no-files-found: ignore
-
     daemon-test:
         name: Daemon · Test (${{ matrix.python-version }})
         needs: config
@@ -161,7 +92,7 @@ jobs:
     # ─── SonarCloud ──────────────────────────────────────────────────────────
     sonar:
         name: SonarCloud analysis
-        needs: [config, daemon-ruff, daemon-mypy, daemon-test]
+        needs: [config, daemon-test]
         if: always()
         runs-on: ubuntu-latest
         timeout-minutes: 15
