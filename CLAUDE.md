@@ -109,6 +109,20 @@ make serve                 # (optional) run the FastAPI HTTP layer on 127.0.0.1:
 
 ## Skills
 
+- `testing-pytest/SKILL.md` — pytest DDD + pytest-mock + constants (load when writing tests)
+
+- `error-handling/SKILL.md` — FastAPI error handling + Sentry + logging (load when handling errors)
+
+- `dockerfile-multistage/SKILL.md` — 4-stage Python 3.14 containers (load when editing Dockerfile)
+
+- `clean-architecture/SKILL.md` — FastAPI module/layer structure (load when adding a domain feature)
+
+- `async-patterns/SKILL.md` — async FastAPI + SQLAlchemy async sessions (load when writing async code)
+
+- `api-design/SKILL.md` — REST standards + FastAPI patterns (load when designing endpoints)
+
+- `agent-patterns/SKILL.md` — LangGraph + PydanticAI + Claude API agent patterns (load when building agents)
+
 Shared skills from `shared-standards/.claude/skills/`:
 
 - `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)

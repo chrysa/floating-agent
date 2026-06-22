@@ -1,48 +1,40 @@
-mode: ContinuousDelivery
-
 assembly:
   fileVersioningScheme: MajorMinorPatch
-
 branches:
-  main:
-    regex: ^main$
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    is-mainline: true
-
   develop:
-    regex: ^develop$
-    mode: ContinuousDeployment
-    tag: alpha
     increment: Minor
-
+    mode: ContinuousDeployment
+    regex: ^develop$
+    tag: alpha
   feat:
+    increment: Inherit
+    mode: ContinuousDelivery
     regex: ^feat[/-]
-    mode: ContinuousDelivery
     tag: useBranchName
-    increment: Inherit
-
   feature:
-    regex: ^features?[/-]
-    mode: ContinuousDelivery
-    tag: useBranchName
     increment: Inherit
-
-  fix:
-    regex: ^fix(es)?[/-]
     mode: ContinuousDelivery
+    regex: ^features?[/-]
     tag: useBranchName
+  fix:
     increment: Patch
-
-  release:
-    regex: ^releases?[/-]
     mode: ContinuousDelivery
-    tag: rc
+    regex: ^fix(es)?[/-]
+    tag: useBranchName
+  main:
+    increment: Patch
+    is-mainline: true
+    mode: ContinuousDelivery
+    prevent-increment-of-merged-branch-version: true
+    regex: ^main$
+    tag: ''
+    track-merge-target: false
+  release:
     increment: None
-
+    mode: ContinuousDelivery
+    regex: ^releases?[/-]
+    tag: rc
 ignore:
-  sha: []
   commits-before: ''
+  sha: []
+mode: ContinuousDelivery
