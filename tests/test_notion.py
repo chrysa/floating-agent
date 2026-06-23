@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from floating_agent.agent.tools import build_notion_tools
-from floating_agent.plugins.notion import NotionPage, _UNTITLED, _extract_title, _parse_page
+from floating_agent.plugins.notion import _UNTITLED, NotionPage, _extract_title, _parse_page
 
 
 class _FakeNotion:
