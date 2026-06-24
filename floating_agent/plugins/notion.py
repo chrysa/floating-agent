@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 _API = "https://api.notion.com/v1"
 _VERSION = "2022-06-28"
+_UNTITLED = "(untitled)"
 
 
 @dataclass(frozen=True)
@@ -73,12 +74,12 @@ def _parse_page(raw: dict[str, object]) -> NotionPage:
 def _extract_title(raw: dict[str, object]) -> str:
     props = raw.get("properties")
     if not isinstance(props, dict):
-        return "(untitled)"
+        return _UNTITLED
     for value in props.values():
         if isinstance(value, dict) and value.get("type") == "title":
             parts = value.get("title", [])
             if isinstance(parts, list) and parts:
                 first = parts[0]
                 if isinstance(first, dict):
-                    return str(first.get("plain_text", "(untitled)"))
-    return "(untitled)"
+                    return str(first.get("plain_text", _UNTITLED))
+    return _UNTITLED
