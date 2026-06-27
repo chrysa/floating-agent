@@ -13,27 +13,27 @@ local `CLAUDE.md`; this file is the shared baseline imported by it.
 
 ## Cross-cutting stack (settled ADRs — do not relitigate)
 
-| Layer            | Decision                                                        |
-|------------------|----------------------------------------------------------------|
-| Python           | 3.14 target (CI matrix 3.12 + 3.14)                            |
-| FastAPI          | >= 0.115 + Pydantic v2                                          |
-| Frontend         | React 19 + TypeScript + Vite 6                                  |
-| UI               | shadcn/ui + Tailwind CSS                                        |
-| State            | TanStack Query + Zustand                                        |
-| DB               | PostgreSQL 16 + Redis 7                                         |
-| ORM              | SQLAlchemy 2.0 async + Alembic                                  |
-| Auth             | 4 modes: Google OAuth2 · local (bcrypt) · LDAP · VCS OAuth      |
-| i18n             | react-i18next + fastapi-babel · FR + EN from V1                 |
-| Monorepo         | Turborepo + pnpm workspaces                                     |
-| Versioning       | GitVersion (semantic auto — never bump manually)               |
-| Quality CI       | SonarCloud (0 hotspot · rating A)                               |
-| Linting          | Ruff + Mypy (Python) · ESLint (TS)                             |
-| Pre-commit       | detect-secrets + ruff + mypy + commitlint                      |
-| Error handling   | withErrorHandling() → auto GitHub Issue on failure             |
-| Hosting          | Kimsufi · Docker Compose (local) · Nginx · Certbot · Tailscale  |
-| Monitoring       | Sentry + Uptime Kuma (self-hosted)                            |
-| Agents           | Claude API (primary) · Ollama (fallback)                       |
-| Orchestration    | LangGraph (stateful) · PydanticAI (structured outputs)         |
+| Layer          | Decision                                                       |
+| -------------- | -------------------------------------------------------------- |
+| Python         | 3.14 target (CI matrix 3.12 + 3.14)                            |
+| FastAPI        | >= 0.115 + Pydantic v2                                         |
+| Frontend       | React 19 + TypeScript + Vite 6                                 |
+| UI             | shadcn/ui + Tailwind CSS                                       |
+| State          | TanStack Query + Zustand                                       |
+| DB             | PostgreSQL 16 + Redis 7                                        |
+| ORM            | SQLAlchemy 2.0 async + Alembic                                 |
+| Auth           | 4 modes: Google OAuth2 · local (bcrypt) · LDAP · VCS OAuth     |
+| i18n           | react-i18next + fastapi-babel · FR + EN from V1                |
+| Monorepo       | Turborepo + pnpm workspaces                                    |
+| Versioning     | GitVersion (semantic auto — never bump manually)               |
+| Quality CI     | SonarCloud (0 hotspot · rating A)                              |
+| Linting        | Ruff + Mypy (Python) · ESLint (TS)                             |
+| Pre-commit     | detect-secrets + ruff + mypy + commitlint                      |
+| Error handling | withErrorHandling() → auto GitHub Issue on failure             |
+| Hosting        | Kimsufi · Docker Compose (local) · Nginx · Certbot · Tailscale |
+| Monitoring     | Sentry + Uptime Kuma (self-hosted)                             |
+| Agents         | Claude API (primary) · Ollama (fallback)                       |
+| Orchestration  | LangGraph (stateful) · PydanticAI (structured outputs)         |
 
 ## Non-negotiable conventions
 
@@ -44,11 +44,20 @@ local `CLAUDE.md`; this file is the shared baseline imported by it.
 - **One PR per issue**, scoped tight. Every PR references an issue (`Closes/Fixes/Refs #N`).
   Exception: label `hotfix`. The `enforce-issue-link` workflow is a blocking status check.
 - **Dark mode** mandatory from V1. **Accessibility** WCAG 2.1 AA.
+- **Notion logging**: every advancement and modification (progress, decisions, state
+  changes) is logged in Notion — the single source of truth. Run `@notion-sync` after any
+  state change; in case of conflict between local docs and Notion, Notion wins.
 - **No hardcoded constants** in code — neither backend (Python) nor frontend (TS).
   All constants and config values (thresholds, business rules, labels, URLs, magic
   numbers) live in **external YAML files** and are loaded at runtime. Code reads them
   through a typed loader (Pydantic Settings backend · generated typed module frontend),
   never as inline literals. Only language-level enums (e.g. `status.HTTP_*`) are exempt.
+- **Semantic URLs & code** — URLs are resource-oriented and human-readable: lowercase,
+  hyphenated, plural-noun collections, no verbs or actions in the path (`GET /invoices/42`,
+  never `/getInvoice?id=42`); REST shapes follow the `api-design` skill. Code is
+  self-describing: intention-revealing names over comments, semantic HTML elements
+  (`<nav>`, `<button>`, `<main>`, `<header>`…) never a `<div>` wired as a control, and
+  ARIA used only to fill gaps native semantics cannot express.
 
 ## Quality gates
 
@@ -64,7 +73,7 @@ local `CLAUDE.md`; this file is the shared baseline imported by it.
 - `async-patterns` — async FastAPI + SQLAlchemy async sessions (async code)
 - `clean-architecture` — FastAPI module/layer structure (adding a feature)
 - `error-handling` — FastAPI errors + Sentry + logging (handling errors)
-- `contract-testing` — library contract / breaking-change tests (@chrysa/* releases)
+- `contract-testing` — library contract / breaking-change tests (@chrysa/\* releases)
 - `agent-patterns` — LangGraph + PydanticAI + Claude API (building agents)
 - `ui-ux` — UX/UI/ergonomics + WCAG 2.1 AA + dark mode + i18n (human-facing surfaces)
 
