@@ -63,3 +63,4 @@ coverage.xml
 graphify
 sys
 graphify-out/
+.gitnexus/

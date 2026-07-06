@@ -1,6 +1,7 @@
 # Skill: Consumer-driven contract testing
 
 ## When to invoke
+
 Auto-invoke when: chrysa-lib is about to release a new version, adding a new consumer of `@chrysa/auth` / `@chrysa/ui` / `@chrysa/api-client`, reviewing breaking changes in a library, or designing a new package API.
 
 ## 1. Core concept
@@ -50,7 +51,10 @@ describe("@chrysa/auth contract", () => {
         method: "POST",
         path: "/auth/login",
         headers: { "Content-Type": "application/json" },
-        body: { email: MatchersV3.string("user@example.com"), password: MatchersV3.string() },
+        body: {
+          email: MatchersV3.string("user@example.com"),
+          password: MatchersV3.string(),
+        },
       })
       .willRespondWith({
         status: 200,
@@ -84,6 +88,7 @@ Add to `chrysa-lib/.github/workflows/ci.yml`:
 ```
 
 Or use the shared workflow:
+
 ```yaml
 uses: chrysa/shared-standards/.github/workflows/contract-testing.yml@main
 with:
@@ -107,6 +112,7 @@ st run openapi.json --checks all --hypothesis-max-examples 50
 ## 6. Consumer onboarding checklist
 
 When a new project starts consuming a chrysa-lib package:
+
 - [ ] Add `@pact-foundation/pact` to dev dependencies
 - [ ] Create `contracts/<provider-name>.contract.test.ts`
 - [ ] Run `pact:generate` to produce `contracts/<provider>.json`
@@ -116,6 +122,7 @@ When a new project starts consuming a chrysa-lib package:
 ## 7. Breaking change protocol
 
 When chrysa-lib wants to change an exported API:
+
 1. Run `npm run contract:verify` locally against all consumer contracts
 2. If any contract fails → it's a **breaking change** → must bump major version
 3. Notify consumers via GitHub issue before merging
@@ -123,9 +130,9 @@ When chrysa-lib wants to change an exported API:
 
 ## 8. Forbidden
 
-| Anti-pattern | Fix |
-|---|---|
-| Releasing chrysa-lib without running contract tests | Contract test CI gate is mandatory from v1.0 |
-| Consumer importing private (`_internal`) exports | Only import from the public `index.ts` |
-| Consumer relying on undocumented types | Open an issue in chrysa-lib to export the type |
-| Pact file committed manually (not generated) | Always generate via `pact:generate` script |
+| Anti-pattern                                        | Fix                                            |
+| --------------------------------------------------- | ---------------------------------------------- |
+| Releasing chrysa-lib without running contract tests | Contract test CI gate is mandatory from v1.0   |
+| Consumer importing private (`_internal`) exports    | Only import from the public `index.ts`         |
+| Consumer relying on undocumented types              | Open an issue in chrysa-lib to export the type |
+| Pact file committed manually (not generated)        | Always generate via `pact:generate` script     |
