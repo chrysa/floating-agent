@@ -36,39 +36,47 @@ Phases 0–1 run inline. Phases 2–4 dispatch in **one message** and run concur
 Phase 5 is sequential — it consumes 2–4's outputs.
 
 ## Phase 0 — Initialization
+
 - Validate the cwd is a project root; check for an existing `CLAUDE.md`.
 - Detect available tooling (`git`, `docker`, `make`, language toolchains).
 - Respect `.gitignore`; comprehensive scan.
 
 ## Phase 1 — Project Discovery
+
 - Detect project type from build files (`pyproject.toml`, `package.json`, `go.mod`, `*.csproj`…).
 - Identify primary language/framework; map directory structure; find existing docs.
 
-## Phase 2 — Core Sections *(general-solution-architect)*
+## Phase 2 — Core Sections _(general-solution-architect)_
+
 - Overview & Quick Start (from README / package metadata; chrysa Makefile targets — `make install`, `make dev`, `make test`).
 - Architecture (map layout to patterns: DDD, Clean, MVC…; layers and boundaries).
 - Technology Stack (parse dependency files for exact versions; dev vs prod; infra from compose/k8s).
 
 ## Phase 3 — Feature Analysis (parallel fan-out)
+
 One specialist subagent per pass, dispatched together:
-1. **Authentication** *(backend)* — middleware, login routes, token handling.
-2. **Business Domain** *(backend)* — entities, aggregates, services, use cases.
-3. **Data Access** *(backend)* — ORM/repositories, migrations, connection config.
-4. **Communication** *(backend)* — controllers/routes, integrations, messaging.
-5. **Infrastructure** *(devops)* — compose/k8s/Terraform → service map with ports.
+
+1. **Authentication** _(backend)_ — middleware, login routes, token handling.
+2. **Business Domain** _(backend)_ — entities, aggregates, services, use cases.
+3. **Data Access** _(backend)_ — ORM/repositories, migrations, connection config.
+4. **Communication** _(backend)_ — controllers/routes, integrations, messaging.
+5. **Infrastructure** _(devops)_ — compose/k8s/Terraform → service map with ports.
 
 ## Phase 4 — Additional Sections (parallel fan-out)
-1. **Testing** *(qa)* — frameworks, test counts by type, **Docker/Makefile** test commands.
-2. **Deployment** *(devops)* — CI/CD (`.github/workflows`), deploy scripts, env config.
-3. **Troubleshooting** *(code-quality-debugger)* — `TODO`/`FIXME`/`HACK`, known issues, error patterns.
-4. **Documentation** *(technical-writer)* — OpenAPI/Swagger, markdown docs, external links.
 
-## Phase 5 — Assembly *(general-technical-writer)*
+1. **Testing** _(qa)_ — frameworks, test counts by type, **Docker/Makefile** test commands.
+2. **Deployment** _(devops)_ — CI/CD (`.github/workflows`), deploy scripts, env config.
+3. **Troubleshooting** _(code-quality-debugger)_ — `TODO`/`FIXME`/`HACK`, known issues, error patterns.
+4. **Documentation** _(technical-writer)_ — OpenAPI/Swagger, markdown docs, external links.
+
+## Phase 5 — Assembly _(general-technical-writer)_
+
 - Combine outputs; consistent markdown; order by priority; add nav links.
 - Verify commands are executable (Docker/Makefile) and paths correct.
 - Write `CLAUDE.md`. If one exists, back it up as `CLAUDE.md.backup` and reuse accurate content.
 
 ## Best Practices
+
 - Keep `CLAUDE.md` accurate — stale context is worse than none.
 - Reference shared files with the `@` prefix (e.g. `@templates/CLAUDE.md`) instead of duplicating.
 - Document what is non-obvious, not what Claude can already read from the code.

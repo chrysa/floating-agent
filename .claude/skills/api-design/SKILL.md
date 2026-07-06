@@ -1,11 +1,13 @@
 # Skill: REST API Design
 
 ## When to invoke
+
 Auto-invoke when: designing new API endpoints, reviewing API responses, adding HTTP status codes, writing FastAPI routes, defining request/response schemas.
 
 ## Core rules
 
 ### Resource naming
+
 ```
 ✅ /api/v1/projects           # plural noun
 ✅ /api/v1/projects/{id}      # sub-resource with ID
@@ -15,16 +17,18 @@ Auto-invoke when: designing new API endpoints, reviewing API responses, adding H
 ```
 
 ### HTTP Methods
-| Method   | URL                  | Action               | Success code  |
-|----------|----------------------|----------------------|---------------|
-| `GET`    | `/resources`         | List                 | `200 OK`      |
-| `GET`    | `/resources/{id}`    | Get one              | `200 OK`      |
-| `POST`   | `/resources`         | Create               | `201 Created` |
-| `PUT`    | `/resources/{id}`    | Full replace         | `200 OK`      |
-| `PATCH`  | `/resources/{id}`    | Partial update       | `200 OK`      |
-| `DELETE` | `/resources/{id}`    | Delete               | `204 No Content` |
+
+| Method   | URL               | Action         | Success code     |
+| -------- | ----------------- | -------------- | ---------------- |
+| `GET`    | `/resources`      | List           | `200 OK`         |
+| `GET`    | `/resources/{id}` | Get one        | `200 OK`         |
+| `POST`   | `/resources`      | Create         | `201 Created`    |
+| `PUT`    | `/resources/{id}` | Full replace   | `200 OK`         |
+| `PATCH`  | `/resources/{id}` | Partial update | `200 OK`         |
+| `DELETE` | `/resources/{id}` | Delete         | `204 No Content` |
 
 ### Status codes — always use constants
+
 ```python
 from fastapi import status
 # or
@@ -47,9 +51,11 @@ status.HTTP_422_UNPROCESSABLE_ENTITY
 status.HTTP_500_INTERNAL_SERVER_ERROR
 status.HTTP_503_SERVICE_UNAVAILABLE
 ```
+
 **Forbidden**: hardcoded integers (`200`, `404`, `500`)
 
 ### Response envelope
+
 ```json
 // Success list
 { "data": [...], "total": 42, "page": 1 }
@@ -62,6 +68,7 @@ status.HTTP_503_SERVICE_UNAVAILABLE
 ```
 
 ### FastAPI route pattern
+
 ```python
 from fastapi import APIRouter, status
 from .schemas import ProjectCreate, ProjectResponse
@@ -78,6 +85,7 @@ async def create_project(payload: ProjectCreate, service: ProjectService = Depen
 ```
 
 ### Security (OWASP Top 10)
+
 - Auth: `Authorization: Bearer <token>` — never in query params
 - Validate all inputs with Pydantic schemas
 - Rate limit public endpoints
@@ -85,5 +93,6 @@ async def create_project(payload: ProjectCreate, service: ProjectService = Depen
 - No sensitive data in `4xx/5xx` error bodies
 
 ### Versioning
+
 - Version in URL path: `/api/v1/...`
 - Never break existing v1 contracts — add v2 for breaking changes
