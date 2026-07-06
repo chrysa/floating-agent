@@ -14,13 +14,13 @@ jobs:
     # release. Lint no longer runs on every PR/push (see ci.yml).
     lint:
         name: Lint gate (pre-commit replay)
-        uses: chrysa/github-actions/.github/workflows/lint-python.yml@main
+        uses: chrysa/github-actions/.github/workflows/lint-python.yml@v1.2.3
         with:
             python-version: "3.14"
             extras: dev
 
     call:
         needs: lint
-        uses: chrysa/github-actions/.github/workflows/release.yml@main
+        uses: chrysa/github-actions/.github/workflows/release.yml@v1.2.3
         secrets:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}

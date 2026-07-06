@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from floating_agent.agent.tools import build_notion_tools
-from floating_agent.plugins.notion import NotionPage, _extract_title, _parse_page
+from floating_agent.plugins.notion import _UNTITLED, NotionPage, _extract_title, _parse_page
 
 
 class _FakeNotion:
@@ -31,8 +31,8 @@ def test_parse_page_extracts_title() -> None:
 
 
 def test_extract_title_falls_back_when_missing() -> None:
-    assert _extract_title({"properties": {}}) == "(untitled)"
-    assert _extract_title({}) == "(untitled)"
+    assert _extract_title({"properties": {}}) == _UNTITLED
+    assert _extract_title({}) == _UNTITLED
 
 
 def test_search_tool_formats_results() -> None:
