@@ -1,22 +1,18 @@
 # Skill: Testing with pytest
 
 ## When to invoke
-
 Auto-invoke when: writing tests, modifying test files, adding new pytest fixtures, debugging test failures, migrating unittest → pytest.
 
 ## Rules
 
 ### Framework
-
 - **pytest ONLY** — `unittest.TestCase` is forbidden
 - `pytest-mock` for all mocks: `MockerFixture`, `mocker.patch`, `mocker.AsyncMock`
 - `pytest-asyncio` for async tests: `@pytest.mark.asyncio` (or `asyncio_mode = "auto"` in config)
 - `pytest-cov` for coverage
 
 ### Constants
-
 Every test module references `tests/constants.py` — never hardcode URLs, strings, or IDs:
-
 ```python
 # tests/constants.py
 BASE_URL = "http://testclient"
@@ -29,7 +25,6 @@ def url(route_key: str) -> str:
 ```
 
 ### Mocking pattern
-
 ```python
 # Always use mocker.AsyncMock for coroutines
 async def test_something(mocker: MockerFixture):
@@ -40,7 +35,6 @@ async def test_something(mocker: MockerFixture):
 ```
 
 ### Status codes
-
 ```python
 from fastapi import status
 # or
@@ -51,7 +45,6 @@ assert response.status_code == HTTPStatus.CREATED
 ```
 
 ### File structure
-
 ```
 tests/
   constants.py       # single source of truth for all test strings/routes
@@ -60,7 +53,6 @@ tests/
 ```
 
 ### Forbidden
-
 - `import unittest` in test files
 - Hardcoded route strings (`"/api/v1/completions"` inline)
 - Integer status codes (use `status.HTTP_*` or `HTTPStatus.*`)
