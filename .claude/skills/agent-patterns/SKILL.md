@@ -1,13 +1,11 @@
 # Skill: Agent patterns — LangGraph + Pydantic AI
 
 ## When to invoke
-
 Auto-invoke when: building AI agents, designing LangGraph state machines, defining Pydantic AI tools, writing agent tests, integrating Claude API with stateful workflows (lifeos, ai-aggregator, discord-bot-back).
 
 ## 1. State machine design (LangGraph)
 
 ### Typed state — always use a dataclass or TypedDict
-
 ```python
 # agent/state.py
 from __future__ import annotations
@@ -25,7 +23,6 @@ class AgentState:
 ```
 
 ### Graph construction — explicit node + edge typing
-
 ```python
 # agent/graph.py
 from langgraph.graph import StateGraph, END
@@ -57,19 +54,17 @@ async def get_compiled_graph(pool) -> CompiledGraph:
 ```
 
 ### Checkpointer rules
-
-| Environment | Checkpointer                                    |
-| ----------- | ----------------------------------------------- |
-| Production  | `AsyncPostgresSaver` (PostgreSQL 16 on cluster) |
-| Tests       | `MemorySaver` (no DB required)                  |
-| Local dev   | `MemorySaver` or `AsyncSqliteSaver`             |
+| Environment | Checkpointer |
+|---|---|
+| Production | `AsyncPostgresSaver` (PostgreSQL 16 on cluster) |
+| Tests | `MemorySaver` (no DB required) |
+| Local dev | `MemorySaver` or `AsyncSqliteSaver` |
 
 **Rule**: every agent MUST have a checkpointer configured. Stateless agents lose context on restart.
 
 ## 2. Tool definition (Pydantic AI)
 
 ### Tool with input validation
-
 ```python
 # agent/tools/search.py
 from pydantic import BaseModel
@@ -94,7 +89,6 @@ async def web_search(ctx: RunContext[None], input: SearchInput) -> list[SearchRe
 ```
 
 ### Structured output — always use Pydantic models
-
 ```python
 from pydantic import BaseModel
 from pydantic_ai import Agent
@@ -114,7 +108,6 @@ agent: Agent[None, AnalysisResult] = Agent(
 ## 3. Agent testing
 
 ### Mock LLM calls — never call real APIs in tests
-
 ```python
 # tests/agent/test_graph.py
 import pytest
@@ -148,7 +141,6 @@ async def test_tool_called_with_correct_input() -> None:
 ```
 
 ### Fixture pattern for graph with MemorySaver
-
 ```python
 @pytest.fixture
 def compiled_graph():
@@ -159,7 +151,6 @@ def compiled_graph():
 ## 4. Error handling in agents
 
 ### Always handle tool failures gracefully
-
 ```python
 async def act_node(state: AgentState) -> AgentState:
     try:
@@ -173,9 +164,7 @@ async def act_node(state: AgentState) -> AgentState:
 ```
 
 ### Circuit breaker for external tool calls
-
 Reuse `api.routing.circuit_breaker.CircuitBreaker` from ai-aggregator for any agent that calls external APIs:
-
 ```python
 from api.routing.circuit_breaker import CircuitBreaker
 
@@ -212,11 +201,11 @@ agent = Agent(get_model(), ...)
 
 ## 6. Forbidden patterns
 
-| Anti-pattern                             | Fix                                                    |
-| ---------------------------------------- | ------------------------------------------------------ |
-| Stateless agent (no checkpointer)        | Always compile with `MemorySaver` at minimum           |
-| Raw string LLM output parsed with regex  | Use `result_type=PydanticModel`                        |
-| Calling real Claude API in tests         | Use `TestModel` or `mocker.AsyncMock`                  |
-| Infinite retry loop in `act_node`        | Cap with `tool_calls_remaining` counter in state       |
-| Agent tool that does DB access directly  | Inject repository via `RunContext` deps                |
+| Anti-pattern | Fix |
+|---|---|
+| Stateless agent (no checkpointer) | Always compile with `MemorySaver` at minimum |
+| Raw string LLM output parsed with regex | Use `result_type=PydanticModel` |
+| Calling real Claude API in tests | Use `TestModel` or `mocker.AsyncMock` |
+| Infinite retry loop in `act_node` | Cap with `tool_calls_remaining` counter in state |
+| Agent tool that does DB access directly | Inject repository via `RunContext` deps |
 | `asyncio.run(agent.run(...))` in a route | Just `await agent.run(...)` — already in async context |

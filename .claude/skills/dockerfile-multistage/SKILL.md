@@ -1,7 +1,6 @@
 # Skill: Dockerfile multi-stage Python 3.14
 
 ## When to invoke
-
 Auto-invoke when: creating or modifying a Dockerfile, updating docker-compose.yml, adding new services, changing Python version, asking about container strategy.
 
 ## Pattern
@@ -54,24 +53,22 @@ CMD ["pytest", "tests/", "--cov=app", "--cov-report=term-missing", "-v"]
 - **Pas de venv** — les packages vont directement dans `site-packages` du système du conteneur
 
 ## docker-compose.yml
-
 ```yaml
 services:
   backend:
     build:
       context: .
-      target: production # ← image minimale
+      target: production    # ← image minimale
 
   backend-test:
     build:
       context: .
-      target: dev # ← tous les steps
+      target: dev           # ← tous les steps
     profiles:
       - test
 ```
 
 ## Makefile
-
 ```makefile
 test:
     docker compose run --rm --no-deps --profile test backend-test
@@ -84,7 +81,6 @@ build-all:
 ```
 
 ## Forbidden
-
 - `FROM python:3.12` ou toute version < 3.14
 - Installer pip dans le stage `production`
 - Créer ou activer un venv (`virtualenv`, `python -m venv`, `pip install --user`)
@@ -101,7 +97,6 @@ Per chrysa-lib `DECISIONS.md` D-0004, fetch the private dependency with a BuildK
 never an `ARG`/`ENV`/`COPY` (those persist the token in an image layer).
 
 `Dockerfile.test`:
-
 ```dockerfile
 # syntax=docker/dockerfile:1
 RUN --mount=type=secret,id=ghtoken,required=true \
@@ -109,19 +104,16 @@ RUN --mount=type=secret,id=ghtoken,required=true \
  && pip install --no-cache-dir -e ".[dev]" \
  && rm -f /root/.gitconfig
 ```
-
 The token is mounted (never written to a layer); the `rm -f /root/.gitconfig` in the same
 `RUN` guarantees the rewritten URL (which embeds the token) does not survive in the layer.
 
 `make docker-test` target:
-
 ```makefile
 docker-test: ## Run tests in Docker (CI parity; private dep fetch via D-0004 BuildKit secret)
 	GH_TOKEN="$${GH_TOKEN:-$${GITHUB_TOKEN:-$$(gh auth token 2>/dev/null)}}" \
 		DOCKER_BUILDKIT=1 docker build -f Dockerfile.test --secret id=ghtoken,env=GH_TOKEN -t <image>-test .
 	docker run --rm <image>-test
 ```
-
 Local dev resolves the token from `gh auth token`; CI passes its `GH_TOKEN`/`GITHUB_TOKEN`.
 Defer to a private PyPI index when a private distribution reaches >=3 consumers or needs
 independent semver (D-0004 revisit trigger).
