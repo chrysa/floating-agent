@@ -1,7 +1,6 @@
 # Skill: Clean Architecture for FastAPI projects
 
 ## When to invoke
-
 Auto-invoke when: creating a new FastAPI module, adding a new domain feature, reviewing existing project structure, deciding where to place new code.
 
 ## Layer definitions
@@ -20,22 +19,20 @@ api/
 
 ## Strict import rules
 
-| Layer             | May import                           | Must NOT import                                         |
-| ----------------- | ------------------------------------ | ------------------------------------------------------- |
-| `domain/`         | stdlib, pydantic                     | FastAPI, SQLAlchemy, httpx, any I/O                     |
-| `services/`       | domain, infrastructure interfaces    | FastAPI (except type hints), SQLAlchemy models directly |
-| `routers/`        | services, models, fastapi            | domain (direct), SQLAlchemy, infrastructure             |
-| `infrastructure/` | domain interfaces, SQLAlchemy, httpx | FastAPI (except `Request` for deps)                     |
+| Layer | May import | Must NOT import |
+|-------|-----------|-----------------|
+| `domain/` | stdlib, pydantic | FastAPI, SQLAlchemy, httpx, any I/O |
+| `services/` | domain, infrastructure interfaces | FastAPI (except type hints), SQLAlchemy models directly |
+| `routers/` | services, models, fastapi | domain (direct), SQLAlchemy, infrastructure |
+| `infrastructure/` | domain interfaces, SQLAlchemy, httpx | FastAPI (except `Request` for deps) |
 
 ### Enforced rule
-
 If a `routers/*.py` file imports from `sqlalchemy` → it belongs in `services/` or `infrastructure/`.
 If a `domain/*.py` file imports from `fastapi` → it belongs in `services/`.
 
 ## Required patterns
 
 ### Router — HTTP boundary only
-
 ```python
 # api/routers/completions.py
 from fastapi import APIRouter, Depends, HTTPException
@@ -56,7 +53,6 @@ async def create_completion(
 ```
 
 ### Service — orchestration only
-
 ```python
 # api/services/completions.py
 from api.domain.routing import route_request
@@ -72,7 +68,6 @@ class CompletionService:
 ```
 
 ### Domain — pure logic, no I/O
-
 ```python
 # api/domain/routing.py
 from dataclasses import dataclass
@@ -94,7 +89,6 @@ def route_request(
 ## Project layout checklist (pre-PR gate)
 
 Before merging any new feature:
-
 - [ ] No `sqlalchemy` import in `routers/`
 - [ ] No `fastapi` import in `domain/` (except type stubs)
 - [ ] No business logic (if/else on domain objects) in `routers/`
@@ -110,13 +104,11 @@ Before merging any new feature:
 ## Refactoring existing routers that violate boundaries
 
 When a router directly imports SQLAlchemy or builds providers:
-
 1. Extract the logic to a `services/<name>.py`
 2. Add the service as a FastAPI dependency via `Depends()`
 3. Update tests to mock the service, not the infrastructure
 4. The router test should never need a DB fixture
 
 ## Reference implementation
-
 See `chrysa/ai-aggregator/` as the canonical reference.
 Routers: `api/routers/` — Services: `api/services/` — Engine: `api/engine/` (domain equivalent).

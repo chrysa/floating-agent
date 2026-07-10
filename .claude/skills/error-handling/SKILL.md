@@ -1,7 +1,6 @@
 # Skill: Error handling — structured errors, correlation IDs, Sentry
 
 ## When to invoke
-
 Auto-invoke when: adding error handling to a FastAPI endpoint, setting up logging, integrating Sentry, reviewing error responses for consistency, designing exception hierarchies.
 
 ## 1. Correlation ID — mandatory on every service
@@ -15,7 +14,6 @@ app.add_middleware(CorrelationIDMiddleware)
 ```
 
 Every log record MUST include the correlation ID when inside a request context:
-
 ```python
 import logging
 logger = logging.getLogger(__name__)
@@ -85,7 +83,6 @@ All error responses MUST follow this JSON shape:
 ```
 
 Pydantic schema:
-
 ```python
 class ErrorResponse(BaseModel):
     detail: str
@@ -112,7 +109,6 @@ if dsn := os.getenv("SENTRY_DSN"):
 ```
 
 ### Capture with correlation ID as tag
-
 ```python
 import sentry_sdk
 
@@ -172,10 +168,10 @@ async def test_not_found_returns_404_with_request_id(mocker: MockerFixture) -> N
 
 ## 7. Forbidden patterns
 
-| Anti-pattern                                            | Fix                                               |
-| ------------------------------------------------------- | ------------------------------------------------- |
-| `raise HTTPException(status_code=404)` inline in router | `raise NotFoundError(...)` — handler maps to 404  |
-| No `request_id` in error response                       | Always include via exception handler              |
-| `except Exception: pass` (silent swallowing)            | Log + re-raise or return structured error         |
-| `print(traceback)` in production                        | Use `logger.exception()` which includes traceback |
-| Sentry DSN hardcoded                                    | Always from `os.getenv("SENTRY_DSN")`             |
+| Anti-pattern | Fix |
+|---|---|
+| `raise HTTPException(status_code=404)` inline in router | `raise NotFoundError(...)` — handler maps to 404 |
+| No `request_id` in error response | Always include via exception handler |
+| `except Exception: pass` (silent swallowing) | Log + re-raise or return structured error |
+| `print(traceback)` in production | Use `logger.exception()` which includes traceback |
+| Sentry DSN hardcoded | Always from `os.getenv("SENTRY_DSN")` |

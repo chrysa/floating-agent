@@ -1,7 +1,6 @@
 # Skill: Async patterns for FastAPI + SQLAlchemy 2.0
 
 ## When to invoke
-
 Auto-invoke when: writing async FastAPI endpoints, setting up SQLAlchemy async sessions, writing async tests, using asyncio/anyio, creating background tasks, or designing repository classes.
 
 ## 1. DB engine — lifespan pattern (mandatory)
@@ -79,7 +78,6 @@ def get_prompt_repo(session: AsyncSession = Depends(get_session)) -> PromptRepos
 ## 3. Testing async code
 
 ### Required setup
-
 ```toml
 # pyproject.toml
 [tool.pytest.ini_options]
@@ -87,7 +85,6 @@ asyncio_mode = "auto"   # all async test functions run automatically
 ```
 
 ### DB fixtures use SQLite in-memory
-
 ```python
 # tests/conftest.py
 import pytest
@@ -106,13 +103,11 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 ```
 
 ### Override get_session in router tests
-
 ```python
 app.dependency_overrides[get_session] = lambda: db_session_fixture
 ```
 
 ### Mock async providers
-
 ```python
 # Always pytest-mock, never unittest.mock
 async def test_service_calls_provider(mocker: MockerFixture) -> None:
@@ -125,14 +120,14 @@ async def test_service_calls_provider(mocker: MockerFixture) -> None:
 
 ## 4. Forbidden patterns
 
-| Anti-pattern                                             | Fix                                                                     |
-| -------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `global _engine: AsyncEngine \| None = None`             | Use lifespan + `app.state`                                              |
-| `asyncio.run(...)` inside FastAPI route                  | Already in async context — just `await`                                 |
-| `loop.run_until_complete()` anywhere                     | Use `anyio.from_thread.run_sync()` if crossing thread boundary          |
-| `session.execute(stmt).fetchall()`                       | Use `(await session.execute(stmt)).fetchall()`                          |
-| `async with AsyncSession(engine)` in each function       | Use `get_session` dependency — never create ad-hoc sessions in services |
-| Module-level `async_sessionmaker(engine, ...)` singleton | Always scoped to lifespan                                               |
+| Anti-pattern | Fix |
+|---|---|
+| `global _engine: AsyncEngine \| None = None` | Use lifespan + `app.state` |
+| `asyncio.run(...)` inside FastAPI route | Already in async context — just `await` |
+| `loop.run_until_complete()` anywhere | Use `anyio.from_thread.run_sync()` if crossing thread boundary |
+| `session.execute(stmt).fetchall()` | Use `(await session.execute(stmt)).fetchall()` |
+| `async with AsyncSession(engine)` in each function | Use `get_session` dependency — never create ad-hoc sessions in services |
+| Module-level `async_sessionmaker(engine, ...)` singleton | Always scoped to lifespan |
 
 ## 5. Background tasks
 
