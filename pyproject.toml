@@ -16,7 +16,7 @@ dependencies = [
     "psutil>=6.0",
     "keyring>=25.0",
     "pydantic>=2.7",
-    "pydantic-settings>=2.3",
+    "pydantic-settings>=2.14.2",
 ]
 
 [project.optional-dependencies]
