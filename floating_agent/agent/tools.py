@@ -16,6 +16,9 @@ if TYPE_CHECKING:
     from floating_agent.plugins.notion import NotionPage
     from floating_agent.proactive.reminders import ReminderStore
 
+from floating_agent.alerts import AlertEngine
+from floating_agent.plugins.network import NetworkPlugin
+from floating_agent.plugins.processes import ProcessPlugin
 from floating_agent.plugins.system import SystemPlugin
 
 
@@ -71,6 +74,89 @@ def build_system_tool(plugin: SystemPlugin | None = None) -> Tool:
     return Tool(
         name="get_system_stats",
         description="Get the current CPU, RAM and disk usage of this machine.",
+        parameters={"type": "object", "properties": {}},
+        handler=handler,
+    )
+
+
+def build_network_tool(plugin: NetworkPlugin | None = None) -> Tool:
+    """Tool returning a one-line network throughput + connection-count summary."""
+    resolved = plugin if plugin is not None else NetworkPlugin()
+
+    def handler(_arguments: dict[str, Any]) -> str:
+        stats = resolved.get_stats()
+        return (
+            f"Network up {stats.sent_mb_s:.2f} MB/s, "
+            f"down {stats.recv_mb_s:.2f} MB/s, "
+            f"{stats.connections} connections"
+        )
+
+    return Tool(
+        name="get_network_stats",
+        description="Get the current network upload/download throughput and active connection count.",
+        parameters={"type": "object", "properties": {}},
+        handler=handler,
+    )
+
+
+def build_top_processes_tool(plugin: ProcessPlugin | None = None) -> Tool:
+    """Tool listing the top processes by CPU usage."""
+    resolved = plugin if plugin is not None else ProcessPlugin()
+
+    def handler(arguments: dict[str, Any]) -> str:
+        limit = int(arguments.get("limit", 5))
+        procs = resolved.top(limit=limit)
+        if not procs:
+            return "No processes found."
+        return "\n".join(f"- {p.name} (pid {p.pid}): CPU {p.cpu_percent:.0f}%, RAM {p.ram_mb:.0f} MB" for p in procs)
+
+    return Tool(
+        name="get_top_processes",
+        description="List the top processes by CPU usage (default 5).",
+        parameters={
+            "type": "object",
+            "properties": {"limit": {"type": "integer", "description": "How many processes to return."}},
+        },
+        handler=handler,
+    )
+
+
+def build_kill_process_tool(plugin: ProcessPlugin | None = None) -> Tool:
+    """Tool terminating a process by pid. Destructive → requires confirmation."""
+    resolved = plugin if plugin is not None else ProcessPlugin()
+
+    def handler(arguments: dict[str, Any]) -> str:
+        pid = int(arguments["pid"])
+        resolved.kill(pid)
+        return f"Sent terminate signal to process {pid}."
+
+    return Tool(
+        name="kill_process",
+        description="Terminate a process by its pid. This is destructive.",
+        parameters={
+            "type": "object",
+            "properties": {"pid": {"type": "integer", "description": "The pid of the process to terminate."}},
+            "required": ["pid"],
+        },
+        handler=handler,
+        requires_confirmation=True,
+    )
+
+
+def build_alerts_tool(engine: AlertEngine | None = None, plugin: SystemPlugin | None = None) -> Tool:
+    """Tool reporting system metrics that breach their configured thresholds."""
+    resolved_engine = engine if engine is not None else AlertEngine.from_config()
+    resolved_plugin = plugin if plugin is not None else SystemPlugin()
+
+    def handler(_arguments: dict[str, Any]) -> str:
+        alerts = resolved_engine.evaluate(resolved_plugin.get_stats())
+        if not alerts:
+            return "No active alerts."
+        return "\n".join(f"ALERT {a.metric} {a.value:.0f}% >= {a.threshold:.0f}%" for a in alerts)
+
+    return Tool(
+        name="get_alerts",
+        description="List system metrics currently breaching their configured alert thresholds.",
         parameters={"type": "object", "properties": {}},
         handler=handler,
     )

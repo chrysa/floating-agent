@@ -1,0 +1,6 @@
+# Alert thresholds for system metrics (percent). Loaded at runtime by
+# floating_agent.config — no hardcoded constants in code (chrysa standard).
+thresholds:
+  cpu_percent: 90.0
+  ram_percent: 90.0
+  disk_percent: 90.0
