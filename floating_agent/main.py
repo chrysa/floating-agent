@@ -8,7 +8,7 @@ agent to other chrysa tools. Listens on 127.0.0.1:34001 (localhost only, never e
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from floating_agent.api.routers import health, system
+from floating_agent.api.routers import alerts, health, system
 
 DAEMON_VERSION = "0.1.0"
 DAEMON_PORT = 34001
@@ -32,3 +32,4 @@ app.add_middleware(
 
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(system.router, prefix="/system", tags=["system"])
+app.include_router(alerts.router, prefix="/alerts", tags=["alerts"])

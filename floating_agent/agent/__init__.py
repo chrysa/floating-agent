@@ -8,11 +8,15 @@ from floating_agent.agent.client import LLMClient, StubClient
 from floating_agent.agent.loop import Agent
 from floating_agent.agent.tools import (
     ToolRegistry,
+    build_alerts_tool,
     build_calendar_tool,
+    build_kill_process_tool,
     build_messaging_tool,
+    build_network_tool,
     build_notion_tools,
     build_reminder_tool,
     build_system_tool,
+    build_top_processes_tool,
 )
 from floating_agent.proactive.reminders import ReminderStore
 
@@ -25,6 +29,10 @@ def build_default_registry(reminder_store: ReminderStore | None = None) -> ToolR
     """
     registry = ToolRegistry()
     registry.register(build_system_tool())
+    registry.register(build_network_tool())
+    registry.register(build_top_processes_tool())
+    registry.register(build_kill_process_tool())
+    registry.register(build_alerts_tool())
 
     if reminder_store is not None:
         registry.register(build_reminder_tool(reminder_store))
