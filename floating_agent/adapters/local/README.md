@@ -6,6 +6,7 @@
 
 - `sqlite_outbox.py` provides durable and idempotent action persistence.
 - `docker_cli_monitor.py` translates bounded Docker lifecycle events.
+- `eml_importer.py` imports local RFC 5322 messages without OAuth.
 
 ## Should contain
 
