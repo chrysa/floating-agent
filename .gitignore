@@ -1,4 +1,6 @@
 floating-agent — Python daemon
+
+# Legacy daemon paths
 daemon/floating_agent.egg-info/
 daemon/.ruff_cache/
 daemon/.mypy_cache/
@@ -7,11 +9,8 @@ daemon/htmlcov/
 daemon/coverage.xml
 daemon/.coverage
 daemon/__pycache__/
-**/__pycache__/
 
-# Build outputs
-dist/
-build/
+# Repository-specific build outputs
 out/
 release/
 
@@ -20,10 +19,6 @@ release/
 .env.local
 .env.*.local
 *.env
-
-# OS
-.DS_Store
-Thumbs.db
 
 # IDE
 .vscode/settings.json
@@ -35,19 +30,9 @@ Thumbs.db
 *.log
 logs/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Native Python extensions
 *.so
 *.egg
-*.egg-info/
-.eggs/
-.tox/
-htmlcov/
-.coverage
-coverage.xml
 
 # Electron
 *.dmg
@@ -58,9 +43,61 @@ coverage.xml
 *.exe
 *.msi
 
-# CodeGraph (local index — never commit)
-.codegraph/
+# Local tooling executables
 graphify
 sys
-graphify-out/
 .gitnexus/
+
+# chrysa canonical .gitignore — source of truth
+# Source: chrysa/shared-standards/templates/gitignore.canonical
+# Appended (not overwritten) into each repo's .gitignore by project-init and
+# scripts/purge-artifacts.sh. Every entry here is a regenerable machine artifact,
+# never source. Repo-specific ignores live ABOVE the managed block in each repo.
+# ---8<--- chrysa:canonical:begin (managed — do not edit inside this block) --->8---
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.benchmarks/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+
+# Node / frontend
+node_modules/
+.svelte-kit/
+.turbo/
+.vite/
+*.tsbuildinfo
+
+# Test / e2e output
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# Local dev tooling caches (knowledge graph / code index)
+graphify-out/
+.codegraph/
+.import_linter_cache/
+
+# Claude Code local state
+.claude/worktrees/
+.claude/settings.local.json
+.claude/*.local.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# ---8<--- chrysa:canonical:end --->8---

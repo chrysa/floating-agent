@@ -5,9 +5,12 @@
 
 .DEFAULT_GOAL := help
 
-PYTHON        := python3
-PIP           := $(PYTHON) -m pip
+UV            := uv
+PYTHON        := $(UV) run python
 PACKAGE       := floating_agent
+XDG_DATA_HOME ?= $(HOME)/.local/share
+UV_PROJECT_ENVIRONMENT ?= $(XDG_DATA_HOME)/floating-agent/venv
+export UV_PROJECT_ENVIRONMENT
 
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -21,9 +24,13 @@ help: ## Show available targets
 # ──────────────────────────────────────────────────────────────────────────────
 
 .PHONY: install
-install: ## Install python deps + pre-commit hooks
-	$(PIP) install -e ".[dev]"
-	pre-commit install
+install: ## Install locked runtime dependencies with uv
+	@$(UV) sync --frozen
+
+.PHONY: install-dev
+install-dev: ## Install development dependencies + pre-commit hooks
+	@$(UV) sync --frozen --all-extras
+	@$(UV) run pre-commit install
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Development
@@ -31,11 +38,11 @@ install: ## Install python deps + pre-commit hooks
 
 .PHONY: dev
 dev: ## Launch the native PySide6 overlay
-	$(PYTHON) -m $(PACKAGE)
+	@$(PYTHON) -m $(PACKAGE)
 
 .PHONY: serve
 serve: ## (optional) Run the FastAPI HTTP layer on 127.0.0.1:34001
-	uvicorn $(PACKAGE).main:app --reload --host 127.0.0.1 --port 34001
+	@$(UV) run uvicorn $(PACKAGE).main:app --reload --host 127.0.0.1 --port 34001
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Test (Docker — chrysa standard)
@@ -43,14 +50,14 @@ serve: ## (optional) Run the FastAPI HTTP layer on 127.0.0.1:34001
 
 .PHONY: test
 test: ## Run tests in Docker
-	docker build -f Dockerfile.test -t floating-agent-test . && docker run --rm floating-agent-test
+	@docker build -f Dockerfile.test -t floating-agent-test . && docker run --rm floating-agent-test
 
 .PHONY: docker-test
 docker-test: test ## Alias for CI-compatible docker-based test
 
 .PHONY: test-cov
 test-cov: ## Run tests with coverage report
-	pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml
+	@$(UV) run pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint, Format, Typecheck
@@ -58,16 +65,20 @@ test-cov: ## Run tests with coverage report
 
 .PHONY: lint
 lint: ## Lint with Ruff
-	ruff check $(PACKAGE) tests
+	@$(UV) run ruff check $(PACKAGE) tests
 
 .PHONY: format
 format: ## Format with Ruff
-	ruff format $(PACKAGE) tests
-	ruff check --fix $(PACKAGE) tests
+	@$(UV) run ruff format $(PACKAGE) tests
+	@$(UV) run ruff check --fix $(PACKAGE) tests
+
+.PHONY: format-check
+format-check: ## Check formatting with Ruff
+	@$(UV) run ruff format --check $(PACKAGE) tests
 
 .PHONY: typecheck
 typecheck: ## Type-check with mypy
-	mypy $(PACKAGE)
+	@$(UV) run mypy $(PACKAGE)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Build & Package (PyInstaller — PR8)
@@ -75,7 +86,7 @@ typecheck: ## Type-check with mypy
 
 .PHONY: build
 build: ## Package a standalone binary for the current OS (PyInstaller)
-	pyinstaller --noconfirm packaging/floating-agent.spec
+	@$(UV) run pyinstaller --noconfirm packaging/floating-agent.spec
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Quality
@@ -83,10 +94,10 @@ build: ## Package a standalone binary for the current OS (PyInstaller)
 
 .PHONY: pre-commit
 pre-commit: ## Run all pre-commit hooks
-	pre-commit run --all-files
+	@$(UV) run pre-commit run --all-files
 
 .PHONY: ci
-ci: lint typecheck test ## Run all CI checks locally
+ci: lint format-check typecheck test ## Run all CI checks locally
 
 quality-gate-baseline: ## Record baseline metrics for regression detection
 	@python3 scripts/quality_gate.py baseline
