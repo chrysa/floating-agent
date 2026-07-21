@@ -1,0 +1,21 @@
+From: Demo Sender <sender@example.test>
+To: Demo Recipient <recipient@example.test>
+Cc: Team Member <team@example.test>
+Date: Tue, 21 Jul 2026 10:30:00 +0200
+Message-ID: <demo-message-1@example.test>
+Subject: Debian beta fixture
+X-Labels: inbox, follow-up
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="fixture-boundary"
+
+--fixture-boundary
+Content-Type: text/plain; charset="utf-8"
+
+Please review the offline Debian beta checklist.
+--fixture-boundary
+Content-Type: text/plain; name="checklist.txt"
+Content-Disposition: attachment; filename="checklist.txt"
+Content-Transfer-Encoding: base64
+
+Tm8gcGVyc29uYWwgZGF0YS4=
+--fixture-boundary--
