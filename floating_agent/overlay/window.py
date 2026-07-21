@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from floating_agent.agent import build_default_agent
+from floating_agent.overlay.widgets.agent_icon_button import AgentIconButton
 from floating_agent.overlay.widgets.chat_widget import ChatWidget
 from floating_agent.overlay.widgets.docker_widget import DockerWidget
 from floating_agent.overlay.widgets.system_widget import SystemWidget
@@ -30,9 +31,12 @@ class OverlayWindow(QWidget):
 
         resolved_agent = agent if agent is not None else build_default_agent()
         layout = QVBoxLayout(self)
+        self.agent_icon = AgentIconButton()
+        layout.addWidget(self.agent_icon)
         layout.addWidget(SystemWidget())
         self.docker_widget = DockerWidget()
         layout.addWidget(self.docker_widget)
+        self.agent_icon.toggled.connect(self.docker_widget.setVisible)
         layout.addWidget(ChatWidget(responder=resolved_agent.run))
 
         self._drag_offset: QPoint | None = None
