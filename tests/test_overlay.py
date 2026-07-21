@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import QEvent, QPointF, Qt
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QWidget
 
 from floating_agent.models import SystemStats
 from floating_agent.overlay.tray import build_tray
@@ -80,3 +80,17 @@ def test_tray_toggle_hides_and_shows(qtbot) -> None:
     assert not window.isVisible()
     toggle.trigger()
     assert window.isVisible()
+
+
+def test_tray_icon_click_toggles_window(qtbot) -> None:
+    app = QApplication.instance() or QApplication([])
+    window = QWidget()
+    qtbot.addWidget(window)
+    window.show()
+    tray = build_tray(app, window)  # type: ignore[arg-type]
+
+    assert not tray.icon().isNull()
+    assert "monitoring" in tray.toolTip()
+    tray.activated.emit(QSystemTrayIcon.ActivationReason.Trigger)
+
+    assert not window.isVisible()
