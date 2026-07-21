@@ -57,3 +57,16 @@ hooks. Per-OS binaries (Linux + Windows) are produced by the `package.yml` matri
 workflow on pull request, manual dispatch, and release — GitHub runners are the
 build/verification environment for cross-OS artifacts. Wayland-native packaging and
 a Windows NSIS installer remain follow-ups.
+
+---
+
+## D-0004 — Offline-first hexagonal application core
+
+**Date**: 2026-07-21
+**Status**: accepted
+
+The Debian beta introduces an offline-first application core behind the existing
+PySide6 overlay. Domain and application code depend only on provider-agnostic ports;
+SQLite, local file imports, operating-system integration, remote providers, and AI
+execution remain adapters. The complete rationale, constraints, and kill-test are
+recorded in [ADR 0004](docs/adr/0004-offline-first-hexagonal-core.md).
