@@ -8,7 +8,7 @@ Thanks for contributing. This repo follows the chrysa
 Install dev dependencies and pre-commit hooks:
 
 ```bash
-make install
+make install-dev
 ```
 
 ## Workflow
