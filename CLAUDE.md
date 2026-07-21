@@ -114,7 +114,7 @@ Shared skills from `shared-standards/.claude/skills/`:
 - `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)
 
 <!-- chrysa:standards:start · managed by distribute-standards.sh · DO NOT EDIT -->
-
+<!-- prettier-ignore-start -->
 # chrysa — Transverse Standards
 
 These conventions are identical across every chrysa repo. Repo-specific rules live in the
@@ -354,5 +354,5 @@ every chrysa ADR carries three that make it falsifiable:
 
 `Killed` is a valid ADR status: the kill-test fired and the hypothesis was false. A corpus with
 no `Killed` entry has kill-tests that are too lax. Scaffold a new record with `/adr-new`.
-
+<!-- prettier-ignore-end -->
 <!-- chrysa:standards:end -->
