@@ -1,0 +1,16 @@
+{
+  "Action": "restart",
+  "Actor": {
+    "Attributes": {
+      "image": "demo:latest",
+      "name": "demo-api"
+    },
+    "ID": "abc123"
+  },
+  "Type": "container",
+  "from": "demo:latest",
+  "id": "abc123",
+  "status": "restart",
+  "time": 1784635260,
+  "timeNano": 1784635260000000000
+}

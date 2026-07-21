@@ -5,6 +5,7 @@
 ## Structure
 
 - `sqlite_outbox.py` provides durable and idempotent action persistence.
+- `docker_cli_monitor.py` translates bounded Docker lifecycle events.
 
 ## Should contain
 

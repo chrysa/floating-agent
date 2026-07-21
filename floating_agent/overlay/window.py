@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from floating_agent.agent import build_default_agent
 from floating_agent.overlay.widgets.chat_widget import ChatWidget
+from floating_agent.overlay.widgets.docker_widget import DockerWidget
 from floating_agent.overlay.widgets.system_widget import SystemWidget
 
 if TYPE_CHECKING:
@@ -25,11 +26,13 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.setFixedSize(320, 420)
+        self.setFixedSize(320, 520)
 
         resolved_agent = agent if agent is not None else build_default_agent()
         layout = QVBoxLayout(self)
         layout.addWidget(SystemWidget())
+        self.docker_widget = DockerWidget()
+        layout.addWidget(self.docker_widget)
         layout.addWidget(ChatWidget(responder=resolved_agent.run))
 
         self._drag_offset: QPoint | None = None
