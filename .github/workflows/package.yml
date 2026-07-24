@@ -30,7 +30,7 @@ jobs:
                     - os: windows-latest
                       artifact: floating-agent-windows
         steps:
-            - uses: actions/checkout@v7.0.0
+            - uses: actions/checkout@v7.0.1
 
             - name: Setup Python
               uses: actions/setup-python@v6.3.0
