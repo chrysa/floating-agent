@@ -114,3 +114,7 @@ repos:
     id: markdownlint
     stages:
     - manual
+- repo: https://github.com/chrysa/guideline-checker
+  rev: v1.15.0
+  hooks:
+  - id: guideline-check
