@@ -27,6 +27,10 @@ help: ## Show available targets
 install: ## Install locked runtime dependencies with uv
 	@$(UV) sync --frozen
 
+.PHONY: install-debian
+install-debian: ## Install the Debian beta user launcher and desktop assets
+	@./install.sh
+
 .PHONY: install-dev
 install-dev: ## Install development dependencies + pre-commit hooks
 	@$(UV) sync --frozen --all-extras
@@ -95,6 +99,14 @@ build: ## Package a standalone binary for the current OS (PyInstaller)
 .PHONY: pre-commit
 pre-commit: ## Run all pre-commit hooks
 	@$(UV) run pre-commit run --all-files
+
+.PHONY: doctor
+doctor: ## Run local installation diagnostics
+	@./scripts/doctor.sh
+
+.PHONY: uninstall
+uninstall: ## Remove the user-level Debian beta installation
+	@./uninstall.sh
 
 .PHONY: ci
 ci: lint format-check typecheck test ## Run all CI checks locally

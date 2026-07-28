@@ -41,6 +41,13 @@ class Agent:
                     if call.name in self._registry
                     else f"Error: unknown tool '{call.name}'"
                 )
-                messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": call.id,
+                        "tool_name": call.name,
+                        "content": result,
+                    }
+                )
 
         return "Stopped: reached the maximum number of tool-calling steps."

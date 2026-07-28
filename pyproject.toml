@@ -19,6 +19,9 @@ dependencies = [
     "pydantic-settings>=2.3",
 ]
 
+[project.scripts]
+floating-agent = "floating_agent.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",

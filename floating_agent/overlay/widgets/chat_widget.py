@@ -32,6 +32,10 @@ class ChatWidget(QWidget):
         layout.addWidget(self._transcript)
         layout.addWidget(self._input)
 
+    def set_responder(self, responder: Callable[[str], str]) -> None:
+        """Update the active responder without rebuilding the widget."""
+        self._responder = responder
+
     def submit(self) -> None:
         """Send the current input to the responder and render the exchange."""
         text = self._input.text().strip()

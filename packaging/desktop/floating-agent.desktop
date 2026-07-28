@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Floating Agent
+Comment=Offline-first floating desktop assistant
+Exec=floating-agent
+Icon=applications-system
+Terminal=false
+Categories=Utility;Development;
+StartupNotify=true
+

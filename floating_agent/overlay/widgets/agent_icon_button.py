@@ -6,13 +6,13 @@ from PySide6.QtWidgets import QToolButton, QWidget
 
 
 class AgentIconButton(QToolButton):
-    """Expose the Attention area through a compact keyboard-focusable icon."""
+    """Expose the assistant panel through a compact keyboard-focusable icon."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setText("✦")
-        self.setAccessibleName("Toggle Attention view")
-        self.setToolTip("Show or hide local Attention activity")
+        self.setText("●")
+        self.setAccessibleName("Toggle assistant panel")
+        self.setToolTip("Show or hide the assistant panel")
         self.setCheckable(True)
-        self.setChecked(True)
-        self.setFixedSize(36, 36)
+        self.setChecked(False)
+        self.setFixedSize(28, 28)
