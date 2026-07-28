@@ -6,6 +6,8 @@ assistant. It is independent from UI, storage, networking, and provider SDKs.
 ## Structure
 
 - `connectivity_state.py` defines application connectivity states.
+- `calendar_event.py` defines inspectable calendar event content.
+- `communication_message.py` defines inspectable communication content.
 - `outbox_item.py` defines the durable remote-action record.
 - `outbox_status.py` defines its lifecycle states.
 - `outbox_transition.py` validates lifecycle transitions.

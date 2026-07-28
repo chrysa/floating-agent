@@ -1,0 +1,16 @@
+{
+  "workspace": "demo-workspace",
+  "conversation": "#release",
+  "messages": [
+    {
+      "id": "msg-1",
+      "thread_id": "thread-1",
+      "author": "Demo User",
+      "content": "Please confirm the Debian beta handoff.",
+      "mentions": ["@release", "@qa"],
+      "reactions": ["thumbs_up"],
+      "sent_at": "2026-07-21T10:15:00Z",
+      "unread": true
+    }
+  ]
+}

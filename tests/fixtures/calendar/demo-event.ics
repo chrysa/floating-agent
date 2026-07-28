@@ -1,0 +1,24 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//floating-agent//debian-beta//EN
+BEGIN:VEVENT
+UID:demo-event@example.test
+DTSTAMP:20260721T080000Z
+DTSTART;TZID=Europe/Paris:20260721T090000
+DTEND;TZID=Europe/Paris:20260721T100000
+SUMMARY:Debian beta planning
+LOCATION:Dock 7
+DESCRIPTION:Review offline beta readiness.
+ORGANIZER;CN=Demo Organizer:mailto:organizer@example.test
+ATTENDEE;CN=Dev One;PARTSTAT=ACCEPTED:mailto:dev1@example.test
+ATTENDEE;CN=Dev Two;PARTSTAT=TENTATIVE:mailto:dev2@example.test
+STATUS:CONFIRMED
+RRULE:FREQ=WEEKLY;COUNT=4
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Prepare the room
+END:VALARM
+X-CONFLICTS:demo-event-1, demo-event-2
+END:VEVENT
+END:VCALENDAR

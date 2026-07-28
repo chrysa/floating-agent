@@ -45,6 +45,21 @@ make install
 make dev
 ```
 
+### Debian beta user install
+
+```bash
+./install.sh
+floating-agent --doctor
+floating-agent --toggle
+./uninstall.sh
+```
+
+Hyprland example:
+
+```ini
+bind = SUPER, SPACE, exec, ~/.local/bin/floating-agent --toggle
+```
+
 ## Development
 
 ```bash

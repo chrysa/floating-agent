@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from PySide6.QtCore import QEvent, QPointF, Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QWidget
@@ -10,6 +12,9 @@ from floating_agent.models import SystemStats
 from floating_agent.overlay.tray import build_tray
 from floating_agent.overlay.widgets.system_widget import SystemWidget
 from floating_agent.overlay.window import OverlayWindow
+
+if TYPE_CHECKING:
+    from pytestqt.qtbot import QtBot
 
 
 class _FakePlugin:
@@ -42,7 +47,7 @@ def _move(x: float, y: float) -> QMouseEvent:
     )
 
 
-def test_system_widget_renders_stats(qtbot) -> None:
+def test_system_widget_renders_stats(qtbot: QtBot) -> None:
     widget = SystemWidget(plugin=_FakePlugin())
     qtbot.addWidget(widget)
     assert "12%" in widget._cpu.text()
@@ -50,15 +55,17 @@ def test_system_widget_renders_stats(qtbot) -> None:
     assert "20%" in widget._disk.text()
 
 
-def test_overlay_window_flags(qtbot) -> None:
+def test_overlay_window_flags(qtbot: QtBot) -> None:
     window = OverlayWindow()
     qtbot.addWidget(window)
     flags = window.windowFlags()
     assert flags & Qt.WindowType.FramelessWindowHint
     assert flags & Qt.WindowType.WindowStaysOnTopHint
+    assert window.width() <= 60
+    assert window.height() <= 60
 
 
-def test_overlay_window_drag_moves(qtbot) -> None:
+def test_overlay_window_drag_moves(qtbot: QtBot) -> None:
     window = OverlayWindow()
     qtbot.addWidget(window)
     window.move(0, 0)
@@ -68,7 +75,7 @@ def test_overlay_window_drag_moves(qtbot) -> None:
     assert window._drag_offset is None
 
 
-def test_tray_toggle_hides_and_shows(qtbot) -> None:
+def test_tray_toggle_hides_and_shows(qtbot: QtBot) -> None:
     app = QApplication.instance() or QApplication([])
     window = QWidget()
     qtbot.addWidget(window)
@@ -82,7 +89,7 @@ def test_tray_toggle_hides_and_shows(qtbot) -> None:
     assert window.isVisible()
 
 
-def test_tray_icon_click_toggles_window(qtbot) -> None:
+def test_tray_icon_click_toggles_window(qtbot: QtBot) -> None:
     app = QApplication.instance() or QApplication([])
     window = QWidget()
     qtbot.addWidget(window)

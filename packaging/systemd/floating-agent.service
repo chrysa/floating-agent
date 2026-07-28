@@ -1,0 +1,13 @@
+[Unit]
+Description=Floating Agent desktop overlay
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/floating-agent
+Restart=on-failure
+RestartSec=5
+Environment=QT_QPA_PLATFORM=wayland
+
+[Install]
+WantedBy=default.target

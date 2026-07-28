@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from floating_agent.overlay.widgets.chat_widget import ChatWidget
 
+if TYPE_CHECKING:
+    from pytestqt.qtbot import QtBot
 
-def test_chat_widget_renders_exchange(qtbot) -> None:
+
+def test_chat_widget_renders_exchange(qtbot: QtBot) -> None:
     widget = ChatWidget(responder=lambda msg: f"echo:{msg}")
     qtbot.addWidget(widget)
     widget._input.setText("hello")
@@ -16,9 +21,14 @@ def test_chat_widget_renders_exchange(qtbot) -> None:
     assert widget._input.text() == ""
 
 
-def test_chat_widget_ignores_empty_input(qtbot) -> None:
+def test_chat_widget_ignores_empty_input(qtbot: QtBot) -> None:
     calls: list[str] = []
-    widget = ChatWidget(responder=lambda msg: calls.append(msg) or "x")
+
+    def responder(msg: str) -> str:
+        calls.append(msg)
+        return "x"
+
+    widget = ChatWidget(responder=responder)
     qtbot.addWidget(widget)
     widget._input.setText("   ")
     widget.submit()

@@ -21,6 +21,7 @@ _ALLOWED_TRANSITIONS = {
     OutboxStatus.WAITING_CONFIRMATION: {OutboxStatus.QUEUED, OutboxStatus.CANCELLED},
     OutboxStatus.QUEUED: {OutboxStatus.EXECUTING, OutboxStatus.CANCELLED},
     OutboxStatus.EXECUTING: {
+        OutboxStatus.QUEUED,
         OutboxStatus.SUCCEEDED,
         OutboxStatus.FAILED,
         OutboxStatus.CONFLICT,
