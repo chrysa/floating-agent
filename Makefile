@@ -89,10 +89,10 @@ pre-commit: ## Run all pre-commit hooks
 ci: lint typecheck test ## Run all CI checks locally
 
 quality-gate-baseline: ## Record baseline metrics for regression detection
-	@python3 scripts/quality_gate.py baseline
+	@quality-gate-baseline
 
 quality-gate-verify: ## Verify no regression since baseline
-	@python3 scripts/quality_gate.py verify
+	@quality-gate-verify
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Clean
