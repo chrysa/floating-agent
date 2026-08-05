@@ -61,12 +61,15 @@ repos:
   - id: console-debug-detection
   - id: console-log-detection
   - id: debugger-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: dockerfile-no-latest
   - id: import-no-relative-parent
   - id: no-bare-except
   - id: no-console-warn
   - id: python-logger-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: python-print-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: react-console-error-detection
   - id: regression-gate
     stages:
@@ -77,14 +80,14 @@ repos:
   - id: env-file-check
   - id: env-example-sync
   - id: python-pprint-detection
-    exclude: tests?/
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: python-unreachable-code
   - id: no-hardcoded-localhost
     exclude: tests?/|\.test\.|\.spec\.
   - id: fastapi-missing-response-model
-    exclude: ^tests/
+    exclude: (^|/)tests/
   - id: fastapi-missing-links
-    exclude: ^tests/
+    exclude: (^|/)tests/
   - id: no-sync-in-async
   - id: claude-skill-frontmatter
   - id: claude-agent-frontmatter
@@ -92,7 +95,7 @@ repos:
   - id: python-no-unittest-import
   - id: claude-assets-present
   - id: python-untyped-raise
-    exclude: ^tests?/
+    exclude: (^|/)tests?/
   - id: python-mutable-default
   - id: python-dispatch-ladder
 - repo: https://github.com/compilerla/conventional-pre-commit
