@@ -6,7 +6,7 @@ from typing import Any
 
 from floating_agent.agent.client import LLMResponse, StubClient, ToolCall
 from floating_agent.agent.loop import Agent
-from floating_agent.agent.tools import ToolRegistry, build_system_tool
+from floating_agent.agent.tools import Tool, ToolRegistry, build_system_tool
 from floating_agent.models import SystemStats
 
 
@@ -95,3 +95,47 @@ def test_stub_client_echoes_user_text() -> None:
     resp = StubClient().complete([{"role": "user", "content": "ping"}], [])
     assert resp.tool_calls == []
     assert "ping" in (resp.text or "")
+
+
+def _confirmable_tool(calls: list[dict[str, Any]]) -> Tool:
+    def handler(arguments: dict[str, Any]) -> str:
+        calls.append(arguments)
+        return "executed"
+
+    return Tool(
+        name="danger",
+        description="A sensitive write.",
+        parameters={"type": "object", "properties": {}},
+        handler=handler,
+        requires_confirmation=True,
+    )
+
+
+def test_loop_denies_confirmation_tool_by_default() -> None:
+    executed: list[dict[str, Any]] = []
+    registry = ToolRegistry()
+    registry.register(_confirmable_tool(executed))
+    client = _ScriptedClient(
+        [
+            LLMResponse(tool_calls=[ToolCall(id="c1", name="danger", arguments={})]),
+            LLMResponse(text="done"),
+        ]
+    )
+    agent = Agent(client=client, registry=registry)
+    assert agent.run("write it") == "done"
+    assert executed == []  # the sensitive write never ran
+
+
+def test_loop_runs_confirmation_tool_when_approved() -> None:
+    executed: list[dict[str, Any]] = []
+    registry = ToolRegistry()
+    registry.register(_confirmable_tool(executed))
+    client = _ScriptedClient(
+        [
+            LLMResponse(tool_calls=[ToolCall(id="c1", name="danger", arguments={"x": 1})]),
+            LLMResponse(text="done"),
+        ]
+    )
+    agent = Agent(client=client, registry=registry, confirm=lambda _tool, _args: True)
+    assert agent.run("write it") == "done"
+    assert executed == [{"x": 1}]
