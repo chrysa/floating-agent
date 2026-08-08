@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import sys
 from datetime import datetime
 
@@ -17,13 +16,14 @@ from floating_agent.proactive.notifier import TrayNotifier
 from floating_agent.proactive.pulse import Decider, NullDecider, ProactivePulse, build_snapshot
 from floating_agent.proactive.reminders import ReminderStore
 from floating_agent.proactive.scheduler import ReminderScheduler
+from floating_agent.secret_store import SecretStore
 
 _TICK_MS = 30_000
 _PULSE_MS = 300_000
 
 
 def _build_decider() -> Decider:
-    url = os.environ.get("AI_AGGREGATOR_URL")
+    url = SecretStore().get("AI_AGGREGATOR_URL")
     if not url:
         return NullDecider()
     from floating_agent.agent.client import AggregatorClient
