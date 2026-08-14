@@ -51,7 +51,7 @@ repos:
     additional_dependencies:
     - pydantic>=2.13.4
     - pydantic-settings>=2.15.0
-    - fastapi>=0.140.7
+    - fastapi>=0.141.1
     - types-psutil
 - repo: https://github.com/chrysa/pre-commit-tools
   rev: v0.2.0-253
