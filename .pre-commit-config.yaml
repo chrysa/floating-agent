@@ -50,7 +50,7 @@ repos:
     files: ^floating_agent/
     additional_dependencies:
     - pydantic>=2.13.4
-    - pydantic-settings>=2.14.2
+    - pydantic-settings>=2.15.0
     - fastapi>=0.140.7
     - types-psutil
 - repo: https://github.com/chrysa/pre-commit-tools
