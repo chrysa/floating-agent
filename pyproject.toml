@@ -21,6 +21,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "chrysa-quality-gate @ git+ssh://git@github.com/chrysa/chrysa-lib.git@v0.3.1#subdirectory=packages/python/quality-gate",
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
     "pytest-cov>=5.0",
@@ -94,7 +95,10 @@ warn_return_any = false
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
-addopts = "--cov=floating_agent --cov-report=xml --cov-report=term-missing --cov-fail-under=85"
+# `-p no:django -p no:query_optimizer`: this is not a Django project, but a globally
+# installed pytest-django / django-query-optimizer inject DJANGO_SETTINGS_MODULE-dependent
+# fixtures into every test setup and abort collection. Disable them locally.
+addopts = "-p no:django -p no:query_optimizer --cov=floating_agent --cov-report=xml --cov-report=term-missing --cov-fail-under=85"
 
 [tool.coverage.run]
 omit = ["floating_agent/__main__.py"]

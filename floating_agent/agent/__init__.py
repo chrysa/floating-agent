@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-
 from floating_agent.agent.client import LLMClient, StubClient
 from floating_agent.agent.loop import Agent
 from floating_agent.agent.tools import (
@@ -15,6 +13,7 @@ from floating_agent.agent.tools import (
     build_system_tool,
 )
 from floating_agent.proactive.reminders import ReminderStore
+from floating_agent.secret_store import SecretStore
 
 
 def build_default_registry(reminder_store: ReminderStore | None = None) -> ToolRegistry:
@@ -29,21 +28,23 @@ def build_default_registry(reminder_store: ReminderStore | None = None) -> ToolR
     if reminder_store is not None:
         registry.register(build_reminder_tool(reminder_store))
 
-    notion_key = os.environ.get("NOTION_API_KEY")
+    secrets = SecretStore()
+
+    notion_key = secrets.get("NOTION_API_KEY")
     if notion_key:  # pragma: no cover - wiring requires real credentials
         from floating_agent.plugins.notion import NotionClient
 
         client = NotionClient(api_key=notion_key)
-        for tool in build_notion_tools(client, os.environ.get("NOTION_TASKS_DB_ID")):
+        for tool in build_notion_tools(client, secrets.get("NOTION_TASKS_DB_ID")):
             registry.register(tool)
 
-    calendar_token = os.environ.get("CALENDAR_ACCESS_TOKEN")
+    calendar_token = secrets.get("CALENDAR_ACCESS_TOKEN")
     if calendar_token:  # pragma: no cover - wiring requires real credentials
         from floating_agent.plugins.calendar import CalendarClient
 
         registry.register(build_calendar_tool(CalendarClient(access_token=calendar_token)))
 
-    gmail_token = os.environ.get("GMAIL_ACCESS_TOKEN")
+    gmail_token = secrets.get("GMAIL_ACCESS_TOKEN")
     if gmail_token:  # pragma: no cover - wiring requires real credentials
         from floating_agent.plugins.messaging import GmailClient
 
@@ -59,7 +60,7 @@ def build_default_agent(client: LLMClient | None = None, reminder_store: Reminde
     to a StubClient so the overlay stays usable before AI routing is wired up.
     """
     if client is None:
-        url = os.environ.get("AI_AGGREGATOR_URL")
+        url = SecretStore().get("AI_AGGREGATOR_URL")
         client = _build_aggregator_client(url) if url else StubClient()
     return Agent(client=client, registry=build_default_registry(reminder_store))
 

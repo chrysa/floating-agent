@@ -105,10 +105,12 @@ make build      # Package a standalone binary (PyInstaller)
 
 ## Security
 
-- No plaintext secrets on disk — OS keychain (`keyring`) mandatory
+- Secrets resolved through the OS keychain (`keyring`) first via `SecretStore`, with an
+  environment-variable fallback for headless/CI setups — no plaintext secrets written to disk
 - OAuth flows handled in-process; tokens never logged
 - All AI calls logged (provider + timestamp, no content)
-- Agent writes (Notion, etc.) require confirmation or dry-run for sensitive actions
+- Agent writes (Notion, etc.) require confirmation — tools flagged `requires_confirmation`
+  are denied by the agent loop unless an explicit confirmation callback approves them
 
 ## Related Projects
 

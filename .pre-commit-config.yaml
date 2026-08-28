@@ -4,123 +4,126 @@ fail_fast: false
 minimum_pre_commit_version: 4.1.0
 exclude: ^\.claude/
 repos:
-- repo: https://github.com/gitleaks/gitleaks
-  rev: v8.30.1
-  hooks:
-  - id: gitleaks
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v6.0.0
-  hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-yaml
-  - id: check-json
-  - id: check-toml
-  - id: check-merge-conflict
-  - id: check-added-large-files
-    args:
-    - --maxkb=1000
-  - id: mixed-line-ending
-    args:
-    - --fix=lf
-  - id: no-commit-to-branch
-    args:
-    - --branch
-    - main
-  - id: detect-private-key
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.16.0
-  hooks:
-  - id: ruff
-    args:
-    - --fix
-    files: ^(floating_agent|tests)/
-  - id: ruff-format
-    files: ^(floating_agent|tests)/
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: v4.0.0-alpha.8
-  hooks:
-  - id: prettier
-    files: \.(json|md)$
-    exclude: ^node_modules/
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v2.3.0
-  hooks:
-  - id: mypy
-    files: ^floating_agent/
-    additional_dependencies:
-    - pydantic>=2.13.4
-    - pydantic-settings>=2.14.2
-    - fastapi>=0.140.7
-    - types-psutil
-- repo: https://github.com/chrysa/pre-commit-tools
-  rev: v0.2.0-247
-  hooks:
-  - id: makefile-check
-  - id: adr-gate
-  - id: console-debug-detection
-  - id: console-log-detection
-  - id: debugger-detection
-  - id: dockerfile-no-latest
-  - id: import-no-relative-parent
-  - id: no-bare-except
-  - id: no-console-warn
-  - id: python-logger-detection
-  - id: python-print-detection
-  - id: react-console-error-detection
-  - id: regression-gate
-    stages:
-    - pre-push
-  - exclude: ^(\.github/|workflows/|templates/)
-    id: yaml-sorter
-  - id: json-sorter
-  - id: env-file-check
-  - id: env-example-sync
-  - id: python-pprint-detection
-    exclude: tests?/
-  - id: python-unreachable-code
-  - id: no-hardcoded-localhost
-    exclude: tests?/|\.test\.|\.spec\.
-  - id: fastapi-missing-response-model
-    exclude: ^tests/
-  - id: fastapi-missing-links
-    exclude: ^tests/
-  - id: no-sync-in-async
-  - id: claude-skill-frontmatter
-  - id: claude-agent-frontmatter
-  - id: claude-mcp-config
-  - id: python-no-unittest-import
-  - id: claude-assets-present
-  - id: python-untyped-raise
-    exclude: ^tests?/
-  - id: python-mutable-default
-  - id: python-dispatch-ladder
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v4.4.0
-  hooks:
-  - id: conventional-pre-commit
-    stages:
-    - commit-msg
-    args:
-    - feat
-    - fix
-    - docs
-    - style
-    - refactor
-    - test
-    - chore
-    - perf
-    - revert
-    - ci
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.49.1
-  hooks:
-  - args:
-    - --fix
-    id: markdownlint
-    stages:
-    - manual
-- repo: https://github.com/chrysa/guideline-checker
-  rev: v1.30.10
-  hooks:
-  - id: guideline-check
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args:
+          - --maxkb=1000
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+      - id: no-commit-to-branch
+        args:
+          - --branch
+          - main
+      - id: detect-private-key
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.3
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+        files: ^(floating_agent|tests)/
+      - id: ruff-format
+        files: ^(floating_agent|tests)/
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: \.(json|md)$
+        exclude: ^node_modules/
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+        files: ^floating_agent/
+        additional_dependencies:
+          - pydantic>=2.13.4
+          - pydantic-settings>=2.15.0
+          - fastapi>=0.141.1
+          - types-psutil
+  - repo: https://github.com/chrysa/pre-commit-tools
+    rev: v0.2.0-253
+    hooks:
+      - id: makefile-check
+      - id: adr-gate
+      - id: console-debug-detection
+      - id: console-log-detection
+      - id: debugger-detection
+        exclude: '(^|/)tests?/|^(README\.md|docs/)'
+      - id: dockerfile-no-latest
+      - id: import-no-relative-parent
+      - id: no-bare-except
+      - id: no-console-warn
+      - id: python-logger-detection
+        exclude: '(^|/)tests?/|^(README\.md|docs/)'
+      - id: python-print-detection
+        exclude: '(^|/)tests?/|^(README\.md|docs/)|(^|/)quality_gate\.py$|^\.claude/ape/'
+      - id: react-console-error-detection
+      - id: regression-gate
+        stages:
+          - pre-push
+      - exclude: ^(\.github/|workflows/|templates/|docker-compose)|(^|/)(pnpm-lock|yarn|uv|poetry)\.(yaml|lock)$|(^|/)\.pre-commit-config\.yaml$
+        id: yaml-sorter
+      - id: json-sorter
+      - id: env-file-check
+      - id: env-example-sync
+      - id: python-pprint-detection
+        exclude: '(^|/)tests?/|^(README\.md|docs/)|(^|/)quality_gate\.py$|^\.claude/ape/'
+      - id: python-unreachable-code
+      - id: no-hardcoded-localhost
+        exclude: tests?/|\.test\.|\.spec\.
+      - id: fastapi-missing-response-model
+        exclude: '(^|/)tests/'
+      - id: fastapi-missing-links
+        exclude: '(^|/)tests/'
+      - id: no-sync-in-async
+      - id: claude-skill-frontmatter
+      - id: claude-agent-frontmatter
+      - id: claude-mcp-config
+      - id: python-no-unittest-import
+      - id: claude-assets-present
+      - id: python-untyped-raise
+        exclude: '(^|/)tests?/'
+      - id: python-mutable-default
+      - id: python-dispatch-ladder
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages:
+          - commit-msg
+        args:
+          - feat
+          - fix
+          - docs
+          - style
+          - refactor
+          - test
+          - chore
+          - perf
+          - revert
+          - ci
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.49.1
+    hooks:
+      - args:
+          - --fix
+        id: markdownlint
+        stages:
+          - manual
+  - repo: https://github.com/chrysa/guideline-checker
+    rev: v1.30.16
+    hooks:
+      - id: guideline-check
