@@ -37,6 +37,7 @@ where = ["."]
 include = ["floating_agent*"]
 
 [tool.ruff]
+extend-exclude = [".claude", "scripts/quality_gate.py"]
 line-length = 120
 # Pinned to py313: `ruff format` on py314 strips except-clause parens (known bug). See DECISIONS D-0002.
 target-version = "py313"
