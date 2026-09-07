@@ -1,0 +1,44 @@
+{
+  "adrs": [],
+  "contracts": [
+    "standards"
+  ],
+  "ddd_level": "(not available)",
+  "dependencies": {
+    "python": [
+      "PySide6",
+      "chrysa-quality-gate",
+      "fastapi",
+      "httpx",
+      "keyring",
+      "mypy",
+      "psutil",
+      "pydantic",
+      "pydantic-settings",
+      "pyinstaller",
+      "pytest",
+      "pytest-asyncio",
+      "pytest-cov",
+      "pytest-qt",
+      "ruff",
+      "uvicorn"
+    ]
+  },
+  "depends_on_shared_standards": true,
+  "description": "Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core",
+  "entry_points": [],
+  "key_directories": [
+    ".claude",
+    ".github",
+    "docs",
+    "floating_agent",
+    "makefiles",
+    "packaging",
+    "scripts",
+    "standards",
+    "tests"
+  ],
+  "name": "floating-agent-daemon",
+  "profiles": [],
+  "schema": "chrysa.context-map/1"
+}
