@@ -106,7 +106,6 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
     action-check.yml
     approved-label.yml
     auto-assign.yml
-    auto-update-pre-commit.yml
     ci.yml
     dependabot-auto-merge.yml
     detect-conflicts.yml
@@ -190,6 +189,7 @@ packaging/
   floating-agent.spec
 pyproject.toml
 scripts/
+  gen_context_files.py
   quality_gate.py
 sonar-project.properties
 standards/
@@ -270,6 +270,7 @@ floating_agent/proactive/pulse.py — Phase 2 proactivity: the agent decides *wh
 floating_agent/proactive/reminders.py — Reminder model + in-memory store (Phase 1: explicit reminders).
 floating_agent/proactive/scheduler.py — Cron-like in-process scheduler: fires due reminders through a notifier.
 floating_agent/secret_store.py — Secret resolution — OS keychain first, environment variable as a fallback.
+scripts/gen_context_files.py — Generate the standardised per-repo context files from the repo's own content.
 scripts/quality_gate.py
 tests/__init__.py — Tests package.
 tests/test_agent.py — Tests for the agent core: registry, tools, and the tool-calling loop.
@@ -277,4 +278,3 @@ tests/test_calendar_messaging.py — Tests for calendar + messaging tools and pa
 tests/test_chat_widget.py — Tests for the overlay ChatWidget (responder runs on a Qt worker thread).
 tests/test_health.py — Tests for health endpoint.
 tests/test_notion.py — Tests for the Notion tools + page parsing (no live Notion).
-tests/test_overlay.py — Tests for the PySide6 overlay (run headless via QT_QPA_PLATFORM=offscreen).
