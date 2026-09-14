@@ -110,6 +110,7 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
     dependabot-auto-merge.yml
     detect-conflicts.yml
     enforce-feature-branch.yml
+    enforce-shortcut-link.yml
     labeler.yml
     mutation-testing.yml
     package.yml
