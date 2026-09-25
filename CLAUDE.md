@@ -256,3 +256,14 @@ Shared skills from `shared-standards/.claude/skills/`:
 ### Local AI orchestration & local-first · `standards/rules/ai-orchestration.md`
 - AI orchestration & local-first
 <!-- chrysa:standards:end -->
+
+## Documentation map
+
+Repo-root docs generated/maintained for this project:
+
+- `ARCHITECTURE.md` — component map, runtime wiring, agent loop, integrations, HTTP layer.
+- `PRD.md` — product vision, positioning, REQ-PROD requirements matrix, non-goals.
+- `TESTING.md` — how to run tests, pytest config (85% coverage gate), test inventory.
+- `SECURITY.md` — secret management (keychain-first), agent confirmation gate, exposure, gaps.
+- `DECISIONS.md` — ADRs (D-0001 standards adherence, D-0002 PySide6 pivot, D-0003 packaging).
+- `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md` — pre-existing, authoritative.
