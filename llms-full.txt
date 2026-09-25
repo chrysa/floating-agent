@@ -19,6 +19,7 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
     general-solution-architect.md
     general-technical-project-lead.md
     general-technical-writer.md
+    qt-ui-reviewer.md
   ape/
     README.md
     ape-transform-v2.md
@@ -34,7 +35,9 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
   hooks/
     check-no-env-files.cjs
     circuit-breaker.cjs
+    claude-config-drift.cjs
     frustration-detection.cjs
+    graphify-auto-update.cjs
     memory-consolidation.cjs
     model-debt-inventory.cjs
     secret-scanner.cjs
@@ -76,6 +79,10 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
     implement/
       SKILL.md
     plan/
+      SKILL.md
+    pytest-qt-widgets/
+      SKILL.md
+    qt-overlay-patterns/
       SKILL.md
     spec/
       SKILL.md
@@ -129,6 +136,7 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
 .pre-commit-config.yaml
 .quality-gate.json
 AGENTS.md
+ARCHITECTURE.md
 CHANGELOG.md
 CLAUDE.md
 CODEOWNERS
@@ -198,6 +206,7 @@ standards/
     README.md
     accessibility.md
     agents.md
+    ai-orchestration.md
     api.md
     architecture.md
     backend-python.md
