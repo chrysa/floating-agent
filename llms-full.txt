@@ -84,6 +84,8 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
       SKILL.md
     qt-overlay-patterns/
       SKILL.md
+    rollout-status/
+      SKILL.md
     spec/
       SKILL.md
     standards-authoring/
@@ -95,6 +97,7 @@ Floating Multi-OS AI Assistant — native PySide6 overlay + Python agent core
     verification-loop/
       SKILL.md
 .editorconfig
+.env.example
 .gitattributes
 .github/
   CODEOWNERS
