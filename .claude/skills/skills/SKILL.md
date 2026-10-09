@@ -1,49 +1,19 @@
-<!-- gitnexus:start -->
+---
+name: skills
+description: "Procedure: Skills. Use when this procedure is needed."
+---
 
-# GitNexus — Code Intelligence
+Shared skills from `shared-standards/.claude/skills/`:
 
-This project is not yet indexed by GitNexus. Run `npx gitnexus analyze` in the project root to initialize the index.
+- `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
-## Always Do
+<!-- chrysa:standards:start · managed by distribute-standards.sh · DO NOT EDIT -->
+# chrysa — Transverse Standards (core)
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
-- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+> The **slim always-on core**. The canonical, tool-agnostic source of truth is `standards/STANDARDS.chrysa.md`; the normative annexes live under `standards/annexes/`. Each rule below is a one-line pointer — its full text lives in the per-domain file named beside the heading (`standards/rules/<domain>.md`), read on demand.
 
-## Never Do
-
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
-
-## Resources
-
-| Resource                                        | Use for                                  |
-| ----------------------------------------------- | ---------------------------------------- |
-| `gitnexus://repo/floating-agent/context`        | Codebase overview, check index freshness |
-| `gitnexus://repo/floating-agent/clusters`       | All functional areas                     |
-| `gitnexus://repo/floating-agent/processes`      | All execution flows                      |
-| `gitnexus://repo/floating-agent/process/{name}` | Step-by-step execution trace             |
-
-## CLI
-
-| Task                                         | Read this skill file                                        |
-| -------------------------------------------- | ----------------------------------------------------------- |
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`       |
-| Blast radius / "What breaks if I change X?"  | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?"             | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`       |
-| Rename / extract / split / refactor          | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`     |
-| Tools, resources, schema reference           | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md`           |
-
-<!-- chrysa:standards-agents:start · generated · DO NOT EDIT -->
-# chrysa standards — agent view (generated)
-
-> The same rules as `CLAUDE.md`, for any AGENTS.md-aware tool. Detail loads on demand from `standards/rules/<domain>.md`; the canon is `standards/STANDARDS.chrysa.md`.
+**Where an annexe and the canon disagree, the canon wins.**
 
 ### Governance, language & compliance · `standards/rules/governance.md`
 - Normative annexes
@@ -129,6 +99,14 @@ This project is not yet indexed by GitNexus. Run `npx gitnexus analyze` in the p
 - Quality gates
 - Error handling pattern (all automations)
 
+### Product surfaces · `standards/rules/product.md`
+- A public web surface is legally compliant, consent-respecting, and operable — before it ships
+- Setup wizard & config panel
+- A game is DRM-free and fully playable solo offline
+- Every product that is operated ships a management backoffice
+- If a user can supply a file, the product accepts an upload
+- A floating assistant where it earns its place — never as decoration
+
 ### Backend Python · `standards/rules/backend-python.md`
 - Python packaging — `pyproject.toml` is the single source of truth
 - Python is written object-oriented, one class per file
@@ -158,13 +136,6 @@ This project is not yet indexed by GitNexus. Run `npx gitnexus analyze` in the p
 - `.dockerignore` mandatory & exhaustive
 - Container-runtime policy
 
-### Product surfaces · `standards/rules/product.md`
-- Setup wizard & config panel
-- A game is DRM-free and fully playable solo offline
-- Every product that is operated ships a management backoffice
-- If a user can supply a file, the product accepts an upload
-- A floating assistant where it earns its place — never as decoration
-
 ### Design system · `standards/rules/design.md`
 - Design system
 
@@ -176,4 +147,7 @@ This project is not yet indexed by GitNexus. Run `npx gitnexus analyze` in the p
 - Release & changelog config (canonical)
 - GitHub Actions (reuse first · custom actions centralised · thin workflows)
 - Pre-commit & git hooks (native, via pre-commit.com — never wrapped in make)
-<!-- chrysa:standards-agents:end -->
+
+### Local AI orchestration & local-first · `standards/rules/ai-orchestration.md`
+- AI orchestration & local-first
+<!-- chrysa:standards:end -->
