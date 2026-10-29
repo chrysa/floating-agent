@@ -49,8 +49,9 @@ test: ## Run tests in Docker
 docker-test: test ## Alias for CI-compatible docker-based test
 
 .PHONY: test-cov
-test-cov: ## Run tests with coverage report
-	QT_QPA_PLATFORM=offscreen pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml
+test-cov: ## Run tests with coverage report (in the Docker test image: Qt runtime + offscreen platform)
+	@docker build -q -f Dockerfile.test -t floating-agent-test . >/dev/null
+	docker run --rm floating-agent-test pytest --cov=$(PACKAGE) --cov-report=term-missing
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint, Format, Typecheck
