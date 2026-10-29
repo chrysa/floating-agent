@@ -1,0 +1,62 @@
+{
+  "gates": {
+    "Build": {
+      "command": "make build",
+      "exit_code": 0,
+      "gate": "Build",
+      "metric": 0,
+      "metric_name": "build_status",
+      "timestamp": "2026-10-29T10:54:50.864157"
+    },
+    "Coverage": {
+      "command": "make test-cov",
+      "exit_code": 0,
+      "gate": "Coverage",
+      "metric": 92.83,
+      "metric_name": "coverage_percentage",
+      "timestamp": "2026-10-29T10:52:37.191016"
+    },
+    "Lint": {
+      "command": "make lint",
+      "exit_code": 0,
+      "gate": "Lint",
+      "metric": 0,
+      "metric_name": "warning_count",
+      "timestamp": "2026-10-29T10:52:37.220015"
+    },
+    "Secrets": {
+      "command": "detect-secrets scan --exclude-files '^\\.secrets\\.baseline$' || true",
+      "exit_code": 0,
+      "gate": "Secrets",
+      "metric": 0,
+      "metric_name": "secret_count",
+      "timestamp": "2026-10-29T10:54:52.719321"
+    },
+    "Tests": {
+      "command": "make test",
+      "exit_code": 0,
+      "gate": "Tests",
+      "metric": 42,
+      "metric_name": "passed_tests",
+      "timestamp": "2026-10-29T10:52:30.725834"
+    },
+    "Types": {
+      "command": "make typecheck",
+      "exit_code": 0,
+      "gate": "Types",
+      "metric": 0,
+      "metric_name": "error_count",
+      "timestamp": "2026-10-29T10:52:45.131213"
+    },
+    "VulnDeps": {
+      "command": "pip-audit || npm audit --audit-level=high || true",
+      "exit_code": 0,
+      "gate": "VulnDeps",
+      "metric": 0,
+      "metric_name": "vuln_count",
+      "timestamp": "2026-10-29T10:54:56.028900"
+    }
+  },
+  "recorded_at": "2026-10-29T10:52:11.020049",
+  "valid": true
+}
