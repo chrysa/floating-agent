@@ -128,7 +128,14 @@ DEFAULT_GATES: list[GateSpec] = [
         # the code — it reported 111 against a baseline of 110 for a commit whose
         # tracked tree measured 110 exactly. Without the flag detect-secrets scans
         # what git tracks, which is what the baseline describes.
-        CommandSpec((("detect-secrets", "scan"),), swallow_exit=True),
+        # The baseline file itself is excluded with a fixed pattern (never one read
+        # from the repo): its hashed_secret lines are flagged as hex high-entropy
+        # strings and secret keywords, two findings per acknowledged entry, so
+        # acknowledging a false positive raised the count instead of lowering it.
+        CommandSpec(
+            (("detect-secrets", "scan", "--exclude-files", r"^\.secrets\.baseline$"),),
+            swallow_exit=True,
+        ),
     ),
     (
         "VulnDeps",
@@ -354,12 +361,17 @@ class QualityGate:
             d = json.loads(output)
             results = d.get("results", {})
             known = self._known_secrets() or set()
-            return sum(
-                1
-                for filename, items in results.items()
-                for item in items
-                if (str(filename), str(item.get("hashed_secret")), str(item.get("type"))) not in known
-            )
+            count = 0
+            for filename, items in results.items():
+                # A malformed entry is not evidence that nothing was found. Counting it
+                # fails closed; the AttributeError it used to raise sent the parser to
+                # the text fallback, which returned 0.
+                for item in items if isinstance(items, list) else [items]:
+                    if not isinstance(item, dict) or (
+                        (str(filename), str(item.get("hashed_secret")), str(item.get("type"))) not in known
+                    ):
+                        count += 1
+            return count
         except (json.JSONDecodeError, AttributeError, ValueError, TypeError):
             pass
         match = re.search(r"secrets?\s+found[:\s]+(\d+)", output, re.IGNORECASE)
