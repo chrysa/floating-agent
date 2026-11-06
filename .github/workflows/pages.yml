@@ -9,10 +9,6 @@ on:
             - mkdocs.yml
     workflow_dispatch:
 
-concurrency:
-    group: pages-${{ github.ref }}
-    cancel-in-progress: false
-
 jobs:
     call:
         uses: chrysa/github-actions/.github/workflows/pages.yml@v1.10.0
