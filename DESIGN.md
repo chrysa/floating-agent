@@ -22,8 +22,8 @@
 
 ## 2. Users, devices and priority tasks
 
-| User | Context and device | Priority tasks |
-| ---- | ------------------ | -------------- |
+| User                          | Context and device                                                                        | Priority tasks                                                                                                                                              |
+| ----------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | The owner, at the workstation | Desktop (Linux X11 today), overlay floating above other work, glanced at many times a day | 1. ask the agent a quick question without leaving the current app · 2. glance at CPU, RAM and disk · 3. receive reminders, then hide or recover the overlay |
 
 Primary action: the chat input line at the bottom of the window.
@@ -61,15 +61,15 @@ A brand brief, the signature element and the visual direction are open choices (
 
 ## 5. Tokens and components (owned elsewhere)
 
-| Concern | Source of truth | Rules of use |
-| ------- | --------------- | ------------ |
-| Colour roles and themes | platform Qt palette (none set in code) | follow the OS light or dark theme until a palette is decided |
-| Typography | platform default font | no size or weight overrides |
-| Window geometry | [window.py](floating_agent/overlay/window.py) `setFixedSize(320, 420)` | fixed size, no resize |
-| Spacing | Qt `QVBoxLayout` defaults | no custom margins |
-| Timing | `POLL_INTERVAL_MS` in [system_widget.py](floating_agent/overlay/widgets/system_widget.py); `_TICK_MS`, `_PULSE_MS` in [app.py](floating_agent/overlay/app.py) | one named constant per interval |
-| Motion | none | — |
-| Components | Qt widgets: read-only `QTextEdit` transcript, `QLineEdit`, `QLabel`, `QSystemTrayIcon`, `QMenu` | native controls; no custom painting |
+| Concern                 | Source of truth                                                                                                                                               | Rules of use                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Colour roles and themes | platform Qt palette (none set in code)                                                                                                                        | follow the OS light or dark theme until a palette is decided |
+| Typography              | platform default font                                                                                                                                         | no size or weight overrides                                  |
+| Window geometry         | [window.py](floating_agent/overlay/window.py) `setFixedSize(320, 420)`                                                                                        | fixed size, no resize                                        |
+| Spacing                 | Qt `QVBoxLayout` defaults                                                                                                                                     | no custom margins                                            |
+| Timing                  | `POLL_INTERVAL_MS` in [system_widget.py](floating_agent/overlay/widgets/system_widget.py); `_TICK_MS`, `_PULSE_MS` in [app.py](floating_agent/overlay/app.py) | one named constant per interval                              |
+| Motion                  | none                                                                                                                                                          | —                                                            |
+| Components              | Qt widgets: read-only `QTextEdit` transcript, `QLineEdit`, `QLabel`, `QSystemTrayIcon`, `QMenu`                                                               | native controls; no custom painting                          |
 
 - **Shared contract:** `contract.css` and `@chrysa/ui` do not apply to a Qt surface.
 - **Design debt and drift:** the README describes a whole-life agent (Notion writes, reminders,
@@ -85,15 +85,15 @@ A brand brief, the signature element and the visual direction are open choices (
   the text survives only in the transcript, not in the field.
 - **Data states:**
 
-  | State | Where it appears | Behaviour |
-  | ----- | ---------------- | --------- |
-  | Loading | chat | input disabled, placeholder "Thinking…" |
-  | Empty | chat | empty transcript; only the placeholder "Ask the agent…" guides |
-  | Error | chat | `[error]` plus the raw exception text, which may not say what to do |
-  | Error | system readout | none: a failing stats call is not caught in the timer slot |
-  | Offline / backend unreachable | chat | stub reply when AI is not configured; otherwise an error line; no persistent indicator |
-  | Stale data | system readout | no timestamp or age |
-  | Reconnect | — | none |
+  | State                         | Where it appears | Behaviour                                                                              |
+  | ----------------------------- | ---------------- | -------------------------------------------------------------------------------------- |
+  | Loading                       | chat             | input disabled, placeholder "Thinking…"                                                |
+  | Empty                         | chat             | empty transcript; only the placeholder "Ask the agent…" guides                         |
+  | Error                         | chat             | `[error]` plus the raw exception text, which may not say what to do                    |
+  | Error                         | system readout   | none: a failing stats call is not caught in the timer slot                             |
+  | Offline / backend unreachable | chat             | stub reply when AI is not configured; otherwise an error line; no persistent indicator |
+  | Stale data                    | system readout   | no timestamp or age                                                                    |
+  | Reconnect                     | —                | none                                                                                   |
 
 - **Real-time:** the system labels update in place every 2 s in a separate widget from the chat,
   so typing is not interrupted. Transcript scroll behaviour on append is not verified.
@@ -121,9 +121,9 @@ do not impose browser layouts or web-only criteria.
 
 ## 9. Assets
 
-| Asset | Source or generator | Author | Licence and attribution | Permitted use | Formats and variants | Location |
-| ----- | ------------------- | ------ | ----------------------- | ------------- | -------------------- | -------- |
-| Tray and app icon | none: `QIcon()` is empty ([tray.py](floating_agent/overlay/tray.py)); the PyInstaller spec bundles no data | — | — | — | — | — |
+| Asset             | Source or generator                                                                                        | Author | Licence and attribution | Permitted use | Formats and variants | Location |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- | ------ | ----------------------- | ------------- | -------------------- | -------- |
+| Tray and app icon | none: `QIcon()` is empty ([tray.py](floating_agent/overlay/tray.py)); the PyInstaller spec bundles no data | —      | —                       | —             | —                    | —        |
 
 No fonts or images ship. PySide6 (LGPL, D-0002) is a runtime dependency, not an asset.
 
@@ -137,8 +137,8 @@ No fonts or images ship. PySide6 (LGPL, D-0002) is a runtime dependency, not an 
   [test_chat_widget.py](tests/test_chat_widget.py)).
 - **Evidence log:**
 
-  | Date | Change | Checks run | Result | Not run, and why |
-  | ---- | ------ | ---------- | ------ | ---------------- |
+  | Date       | Change                         | Checks run                                                               | Result             | Not run, and why                                                                |
+  | ---------- | ------------------------------ | ------------------------------------------------------------------------ | ------------------ | ------------------------------------------------------------------------------- |
   | 2026-11-08 | contract written from the code | source review of `floating_agent/overlay` and `floating_agent/proactive` | gaps listed in §11 | no browser run: documentation-only change (the overlay was not launched either) |
 
 ## 11. Open choices, known gaps and maintenance
