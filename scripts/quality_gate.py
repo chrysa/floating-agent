@@ -6,6 +6,12 @@ Machine-readable output lines:
 - GATE_RESULT|<Gate>|FAIL|...
 - OVERALL_RESULT|PASS
 - OVERALL_RESULT|FAIL
+- OVERALL_RESULT|SKIP  (verify only: no baseline, nothing was evaluated)
+
+Exit codes:
+- 0  every gate passed
+- 1  a gate failed, the baseline is invalid, or the usage is wrong
+- 2  ``verify`` evaluated nothing (no baseline). Never 0: "not evaluated" is not "green".
 """
 
 from __future__ import annotations
@@ -27,6 +33,13 @@ from typing import Any
 _EXIT_NOT_FOUND = 127
 # No alternative applied: every one was guarded by a manifest this repo lacks.
 _EXIT_NOT_APPLICABLE = 126
+
+# Process exit codes of the CLI. NOT_EVALUATED is distinct from both PASS and FAIL:
+# a verify run without a baseline checked nothing, and exiting 0 made every repo
+# without a baseline look green (the "false green" this code exists to prevent).
+EXIT_PASS = 0
+EXIT_FAIL = 1
+EXIT_NOT_EVALUATED = 2
 
 # Operator -> comparison, as a table. Both the unicode and ASCII spellings of each
 # ordering are accepted because baselines exist carrying either. An operator absent
@@ -505,7 +518,13 @@ class QualityGate:
         print("ERROR: baseline contains failing gates; fix quality checks before using this baseline")
         return False
 
-    def verify(self) -> bool:
+    def verify(self) -> int:
+        """Compare the current metrics with the baseline; return the process exit code.
+
+        ``EXIT_PASS`` when every gate holds, ``EXIT_FAIL`` on any regression, and
+        ``EXIT_NOT_EVALUATED`` when there is no baseline: nothing was compared, so the
+        run must not read as a pass.
+        """
         print("VERIFY|START")
         if not self.baseline_path.exists():
             report = {
@@ -516,8 +535,11 @@ class QualityGate:
             }
             self._write_report(report)
             print("OVERALL_RESULT|SKIP")
-            print("WARNING: no baseline found — skipping regression check (run quality-gate-baseline to initialize)")
-            return True
+            print(
+                f"ERROR: not evaluated — no baseline at {self.baseline_path}; nothing was checked "
+                f"(exit {EXIT_NOT_EVALUATED}). Run 'make quality-gate-baseline' and commit the file."
+            )
+            return EXIT_NOT_EVALUATED
 
         with open(self.baseline_path, encoding="utf-8") as handle:
             baseline = json.load(handle)
@@ -590,10 +612,10 @@ class QualityGate:
 
         if all_passed:
             print("OVERALL_RESULT|PASS")
-            return True
+            return EXIT_PASS
 
         print("OVERALL_RESULT|FAIL")
-        return False
+        return EXIT_FAIL
 
 
 def main() -> None:
@@ -605,9 +627,9 @@ def main() -> None:
     quality_gate = QualityGate()
 
     if command == "baseline":
-        sys.exit(0 if quality_gate.baseline() else 1)
+        sys.exit(EXIT_PASS if quality_gate.baseline() else EXIT_FAIL)
     if command == "verify":
-        sys.exit(0 if quality_gate.verify() else 1)
+        sys.exit(quality_gate.verify())
 
     print(f"Unknown command: {command}")
     sys.exit(1)
