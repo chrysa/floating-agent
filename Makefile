@@ -49,8 +49,14 @@ test: ## Run tests in Docker
 docker-test: test ## Alias for CI-compatible docker-based test
 
 .PHONY: test-cov
-test-cov: ## Run tests with coverage report
-	pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml
+test-cov: ## Run tests with coverage report (Docker: Qt libs are not on bare CI runners)
+	docker build -f Dockerfile.test -t floating-agent-test .
+	@docker rm -f floating-agent-cov >/dev/null 2>&1 || true
+	@rc=0; docker run --name floating-agent-cov floating-agent-test \
+		pytest --cov=$(PACKAGE) --cov-report=term-missing --cov-report=xml || rc=$$?; \
+	docker cp floating-agent-cov:/app/coverage.xml ./coverage.xml >/dev/null 2>&1 || true; \
+	docker rm -f floating-agent-cov >/dev/null 2>&1 || true; \
+	exit $$rc
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Lint, Format, Typecheck
@@ -89,10 +95,10 @@ pre-commit: ## Run all pre-commit hooks
 ci: lint typecheck test ## Run all CI checks locally
 
 quality-gate-baseline: ## Record baseline metrics for regression detection
-	@quality-gate-baseline
+	@python3 scripts/quality_gate.py baseline
 
 quality-gate-verify: ## Verify no regression since baseline
-	@quality-gate-verify
+	@python3 scripts/quality_gate.py verify
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Clean
